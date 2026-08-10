@@ -1033,18 +1033,35 @@ function drawTitle() {
   const bob = Math.sin(t * 1.6) * 2;
   hud.save();
   hud.translate(VIEW_W / 2, 78 + bob);
-  hud.textAlign = 'center';
-  hud.font = 'bold 54px "Trebuchet MS", system-ui, sans-serif';
+
+  /* blocky "J" logo mark, matching the favicon design */
+  const logoParts = [
+    [0, -50, 15, 45, '#7ee787'],    // stem
+    [-25, -50, 40, 10, '#7ee787'],  // top bar
+    [-30, -20, 10, 20, '#7ee787'],  // hook curl
+    [-20, -10, 35, 10, '#7ee787'],  // hook foot
+    // pixel "2" superscript, in place of the favicon's plain accent block
+    [18, -55, 9, 3, '#ffd166'],
+    [15, -52, 3, 3, '#ffd166'],
+    [27, -52, 3, 3, '#ffd166'],
+    [27, -49, 3, 3, '#ffd166'],
+    [24, -46, 3, 3, '#ffd166'],
+    [21, -43, 3, 3, '#ffd166'],
+    [18, -40, 3, 3, '#ffd166'],
+    [15, -37, 15, 3, '#ffd166'],
+  ];
+  hud.save();
+  hud.translate(1.6, 2.2);
   hud.fillStyle = '#0b1020';
-  hud.fillText('J', -12, 4);
-  hud.fillStyle = '#ffe9a8';
-  hud.fillText('J', -12, 0);
-  hud.font = 'bold 30px "Trebuchet MS", system-ui, sans-serif';
-  hud.fillStyle = '#0b1020'; hud.fillText('2', 22, -14);
-  hud.fillStyle = '#8fd3ff'; hud.fillText('2', 22, -18);
+  for (const [x, y, w, h] of logoParts) hud.fillRect(x, y, w, h);
+  hud.restore();
+  for (const [x, y, w, h, fill] of logoParts) {
+    hud.fillStyle = fill;
+    hud.fillRect(x, y, w, h);
+  }
   hud.restore();
 
-  hudText(TR('JAY  SQUARED'), VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
+  hudText(TR('JAY SQUARED'), VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
   hudText(TR('a blocky adventure in five biomes'), VIEW_W / 2, 126, 8.5, 'rgba(200,215,255,.6)', 'center');
 
   const pulse = 0.55 + Math.sin(t * 4) * 0.35;
