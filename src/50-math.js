@@ -3,23 +3,23 @@
    ========================================================================== */
 
 const ABILITIES = {
-  swift:   { name: 'Swift Feet',    desc: 'Jay runs faster' },
-  magnet:  { name: 'Gem Magnet',    desc: 'gems come to you' },
-  heart:   { name: 'Extra Heart',   desc: 'one more heart' },
-  square:  { name: 'Squared Mind',  desc: 'TAB doubles E as well as Q' },
-  feather: { name: 'Feather Fall',  desc: 'you fall gently' },
+  swift:   { get name() { return TR('Swift Feet'); },   get desc() { return TR('Jay runs faster'); } },
+  magnet:  { get name() { return TR('Gem Magnet'); },   get desc() { return TR('gems come to you'); } },
+  heart:   { get name() { return TR('Extra Heart'); },  get desc() { return TR('one more heart'); } },
+  square:  { get name() { return TR('Squared Mind'); }, get desc() { return TR('TAB doubles E as well as Q'); } },
+  feather: { get name() { return TR('Feather Fall'); }, get desc() { return TR('you fall gently'); } },
 };
 
 function grantAbility(key) {
   if (!key) {
     const pool = Object.keys(ABILITIES).filter(k => !G.abilities.has(k));
-    if (!pool.length) { G.lives++; say('1-UP', 'all abilities already found', '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); return; }
+    if (!pool.length) { G.lives++; say(TR('1-UP'), TR('all abilities already found'), '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); return; }
     key = pool[Math.floor(Math.random() * pool.length)];
   }
   G.abilities.add(key);
   if (key === 'heart') { G.player.maxHp++; G.player.heal(2); }
   // collapses into the row this ability now occupies in the bottom-left list
-  say('ABILITY: ' + ABILITIES[key].name, ABILITIES[key].desc, '#c7a8ff', 4.5,
+  say(TRF('abilityLabel', ABILITIES[key].name), ABILITIES[key].desc, '#c7a8ff', 4.5,
     HUD_HOME.ability(G.abilities.size - 1));
   SFX.oneUp();
 }
@@ -41,10 +41,10 @@ function collectGem(x, y) {
     G.flash = Math.max(G.flash, 0.12);
     if (!G.squaresFound.has(n)) {
       G.squaresFound.add(n);
-      if (r % 5 === 0) { G.lives++; say('1-UP!', n + ' gems = ' + r + ' squared', '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
-      else if (r % 3 === 0) { G.player.heal(1); say('perfect square: ' + r + '²', 'a heart returns', '#9ff0c0', 3.2, HUD_HOME.hearts()); }
+      if (r % 5 === 0) { G.lives++; say(TR('1-UP!'), TRF('gemsSquared', n, r), '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
+      else if (r % 3 === 0) { G.player.heal(1); say(TRF('perfectSquareHeart', r), TR('a heart returns'), '#9ff0c0', 3.2, HUD_HOME.hearts()); }
       else if (r === 4) { grantAbility('magnet'); }
-      else say('perfect square', n + ' = ' + r + ' × ' + r, '#9ff0c0', 2);
+      else say(TR('perfect square'), n + ' = ' + r + ' × ' + r, '#9ff0c0', 2);
     }
   }
 }
@@ -118,18 +118,18 @@ function submitRune() {
   if (R.input === '') return;
   const val = parseInt(R.input, 10);
   if (val === R.ans) {
-    R.done = true; R.doneT = 1.5; R.msg = 'CORRECT';
+    R.done = true; R.doneT = 1.5; R.msg = 'CORRECT'; R.msgKind = 'correct';
     R.rune.used = true; R.rune.dead = true;
     G.score += 500;
     for (let i = 0; i < 30; i++)
       spawnParticle(R.rune.cx, R.rune.cy, (Math.random() - .5) * 240, (Math.random() - .5) * 240, '#c7a8ff', 0.8);
     setTimeout(() => {
-      if (R.kind === 'oneup') { G.lives++; say('1-UP!', 'the rune rewards a sharp mind', '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
+      if (R.kind === 'oneup') { G.lives++; say(TR('1-UP!'), TR('the rune rewards a sharp mind'), '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
       else if (R.kind === 'ability') grantAbility(null);
       else { for (let i = 0; i < 9; i++) setTimeout(() => collectGem(G.player.cx, G.player.cy - 8), i * 90); }
     }, 500);
   } else {
-    R.done = true; R.doneT = 1.4; R.msg = 'NOT QUITE — it was ' + R.ans;
+    R.done = true; R.doneT = 1.4; R.msg = 'NOT QUITE — it was ' + R.ans; R.msgKind = 'wrong';
     R.rune.cool = 3.5;
     Audio2.blip(160, 0.25, 'sawtooth', 0.6, -60);
   }
@@ -162,7 +162,7 @@ function buildLevel(index) {
   G.cam.y = clamp(G.player.cy - VIEW_H / 2, 0, W.h * TILE - VIEW_H);
   G.levelTime = 0;
   G.glitchUsedHere = false;      // the tear can be found once per level
-  say(W.name, 'level ' + (index + 1) + ' of ' + LEVELS.length, '#ffe9a8', 3);
+  say(W.name, TRF('levelOfTotal', index + 1, LEVELS.length), '#ffe9a8', 3);
 }
 
 function startRun() {
@@ -170,6 +170,7 @@ function startRun() {
   G.abilities = new Set();
   G.squaresFound = new Set();
   G.player = null;
+  G.langPickT = 0;
   resetPhysics();
   buildLevel(0);
   G.state = 'play';
@@ -180,7 +181,7 @@ function completeLevel() {
   G.clearT = 2.6;
   G.score += 1000 + G.player.hp * 250;
   SFX.door();
-  say('LEVEL CLEAR', G.world.name, '#ffe9a8', 2.6);
+  say(TR('LEVEL CLEAR'), G.world.name, '#ffe9a8', 2.6);
 }
 
 /* ======================= THE 144 CODE (12²) ==============================
@@ -193,10 +194,10 @@ function toggleImmortal() {
   G.codeBuf = '';
   if (G.immortal) {
     Audio2.arp([392, 523, 659, 784, 1046, 1318], 0.06, 'triangle');
-    say('EXPLORER MODE ON', '144 = 12²  ·  Jay cannot die', '#9ff0c0', 4.5);
+    say(TR('EXPLORER MODE ON'), TR('144 = 12²  ·  Jay cannot die'), '#9ff0c0', 4.5);
   } else {
     Audio2.arp([784, 587, 392], 0.07, 'square');
-    say('explorer mode off', 'back to five lives', '#ff9d6b', 3);
+    say(TR('explorer mode off'), TR('back to five lives'), '#ff9d6b', 3);
   }
   G.flash = 0.3;
 }
@@ -227,7 +228,7 @@ function rescue(reason) {
   G.shots = [];
   G.flash = 0.22;
   SFX.oneUp();
-  say('rescued', reason, '#9ff0c0', 2.2);
+  say(TR('rescued'), reason, '#9ff0c0', 2.2);
   for (let i = 0; i < 26; i++)
     spawnParticle(p.cx, p.cy, (Math.random() - .5) * 220, (Math.random() - .5) * 220, '#9ff0c0', 0.7);
 }
@@ -235,7 +236,7 @@ function rescue(reason) {
 function playerDied(cause) {
   if (G.state !== 'play') return;
   if (G.immortal) {
-    rescue(cause === 'the void' ? 'the void gave you back' : 'that would have hurt');
+    rescue(cause === 'the void' ? TR('the void gave you back') : TR('that would have hurt'));
     return;
   }
   G.state = 'dead';
@@ -280,6 +281,22 @@ function atTitle() {
   return G.state === 'title' || (G.state === 'help' && G.helpFrom === 'title');
 }
 
+/* L cycles English → Español → Deutsch → English. On the title screen the
+   language hint itself confirms the choice; everywhere else a small banner
+   announces it and collapses into a corner badge (see HUD_HOME.lang). */
+function cycleLang() {
+  const i = LANGS.indexOf(G.lang);
+  G.lang = LANGS[(i + 1) % LANGS.length];
+  saveLang(G.lang);
+  SFX.menu();
+  if (G.state === 'title') {
+    G.langPickT = 2;
+  } else {
+    G.langShown = true;
+    say(LANG_NAME[G.lang], '', '#8fd3ff', 1.3, HUD_HOME.lang());
+  }
+}
+
 /* ==========================================================================
    THE GLITCH — fall into the void while a magma ball is in flight
    ========================================================================== */
@@ -314,7 +331,7 @@ const GLITCH_ROOT = [
       const copy = G.mobs.filter(m => !m.dead).slice(0, 40);
       copy.forEach(m => G.mobs.push(new Mob(m.x + 10, m.y - 12, m.type, m.tamed)));
     }},
-    { label: 'DOUBLE THE GEMS', run: () => { const before = G.gems; for (let i = 0; i < before; i++) G.gems++; say('gems ×2', before + ' → ' + G.gems, '#9ff0c0'); } },
+    { label: 'DOUBLE THE GEMS', run: () => { const before = G.gems; for (let i = 0; i < before; i++) G.gems++; say(TR('gems ×2'), before + ' → ' + G.gems, '#9ff0c0'); } },
     { label: 'DOUBLE THE LIVES', run: () => { G.lives = Math.min(99, G.lives * 2 + 1); } },
   ]},
   { label: '>> RESUME GAME', run: () => closeGlitch() },
@@ -390,7 +407,7 @@ function updateGlitch(dt) {
     if (it.sub) { gl.path.push(gl.sel); gl.sel = 0; Audio2.blip(620, 0.05, 'square', 0.5); }
     else {
       it.run();
-      gl.log.unshift('> ' + it.label + '  ...OK');
+      gl.log.unshift('> ' + TR(it.label) + '  ...OK');
       gl.log = gl.log.slice(0, 5);
       Audio2.blip(880, 0.07, 'square', 0.6, -200);
       Audio2.noise(0.08, 0.25);
@@ -407,5 +424,5 @@ function closeGlitch() {
   G.player.invuln = 1.5;
   G.shots = [];
   G.state = 'play';
-  say('reality restored', 'mostly', '#a0ffd0', 2);
+  say(TR('reality restored'), TR('mostly'), '#a0ffd0', 2);
 }

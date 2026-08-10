@@ -207,6 +207,429 @@ const IN = {
   doubler: () => Keys.isDown('Tab'),
   cycle: () => Keys.shiftTap,
   help: () => Keys.justPressed('Slash', 'KeyH', 'NumpadDivide'),
+  lang: () => Keys.justPressed('KeyL'),
+};
+
+/* --- internationalization -------------------------------------------------
+   TR(s) looks the English original up in the current language's table and
+   falls back to s itself, so anything not yet translated (or intentionally
+   left in English) just degrades to English instead of throwing or showing
+   "undefined". TRF is the same idea for messages built from live numbers —
+   keyed by an id rather than by English text, since the English text itself
+   is never a fixed string. */
+const LANGS = ['en', 'es', 'de'];
+const LANG_NAME = { en: 'English', es: 'Español', de: 'Deutsch' };
+const LANG_CODE = { en: 'EN', es: 'ES', de: 'DE' };
+const LANG_STORAGE_KEY = 'jaySquaredLang';
+
+function loadLang() {
+  try {
+    const v = localStorage.getItem(LANG_STORAGE_KEY);
+    if (LANGS.includes(v)) return v;
+  } catch (e) { /* file:// or privacy mode can throw on localStorage access */ }
+  return 'en';
+}
+function saveLang(lang) {
+  try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch (e) {}
+}
+
+const STRINGS = {
+  es: {
+    'Click to play': 'Toca para jugar',
+
+    'JAY  SQUARED': 'JAY  AL CUADRADO',
+    'a blocky adventure in five biomes': 'una aventura de bloques en cinco biomas',
+    'PRESS SPACE TO PLAY': 'PULSA ESPACIO PARA JUGAR',
+    'PRESS  ?  FOR HELP': 'PULSA  ?  PARA AYUDA',
+    'the controls live in there, and you can open it mid-game': 'ahí están los controles, y puedes abrirla en plena partida',
+    '∞   EXPLORER MODE IS ON   ∞': '∞   MODO EXPLORADOR ACTIVO   ∞',
+    'Jay is almost 8. He is very good at maths. That turns out to matter.': 'Jay casi tiene 8 años. Es muy bueno en matemáticas. Y eso resulta importar.',
+
+    'LEVEL CLEAR': 'NIVEL SUPERADO',
+    'GAME OVER': 'FIN DEL JUEGO',
+    'press SPACE to try again': 'pulsa ESPACIO para reintentar',
+    'THE CASTLE IS YOURS': 'EL CASTILLO ES TUYO',
+    'press SPACE to play again': 'pulsa ESPACIO para jugar de nuevo',
+    'PAUSED': 'PAUSA',
+    'P or ESC to keep going': 'P o ESC para continuar',
+    '∞  explorer mode is on': '∞  modo explorador activo',
+    'MATH RUNE': 'RUNA MATEMÁTICA',
+    'type the number · ENTER to answer · ESC to walk away': 'escribe el número · ENTER para responder · ESC para irte',
+    'CORRECT': 'CORRECTO',
+
+    'TAB + Q  =  DOUBLE POWER': 'TAB + Q  =  PODER DOBLE',
+    'Q punch blocks    E uppercut    SHIFT / 1-5 to hold a plant': 'Q golpea bloques    E gancho    SHIFT / 1-5 para llevar una planta',
+    'Q power    E alt    TAB+Q ²    SHIFT cycles    0 fists': 'Q poder    E alt    TAB+Q ²    SHIFT rota    0 puños',
+
+    'HOW TO PLAY': 'CÓMO JUGAR',
+    'Jay Squared  ·  J²  ·  and some things are not on this list': 'Jay Squared  ·  J²  ·  y algunas cosas no están en esta lista',
+    'THE FIVE PLANTS  —  one hides in each biome': 'LAS CINCO PLANTAS  —  una se esconde en cada bioma',
+    '? or ESC to go back   ·   SPACE to play': '? o ESC para volver   ·   ESPACIO para jugar',
+    '? or ESC to get back to the game': '? o ESC para volver al juego',
+    'MOVING': 'MOVIMIENTO',
+    'POWERS': 'PODERES',
+    'WHAT YOU CARRY': 'LO QUE LLEVAS',
+    'THE GAME': 'EL JUEGO',
+    "JAY'S MATHEMATICS": 'LAS MATEMÁTICAS DE JAY',
+    'walk  (A and D work too)': 'caminar  (A y D también sirven)',
+    'jump · climb a ladder, vine or trunk': 'saltar · subir escalera, enredadera o tronco',
+    'crouch · climb down': 'agacharse · bajar',
+    'jump — press again in mid-air to': 'saltar — pulsa otra vez en el aire para',
+    'go higher, up to five times': 'subir más alto, hasta cinco veces',
+    'drop through wooden planks': 'caer a través de tablones de madera',
+    'use power · hold it to punch': 'usar poder · mantén para golpear',
+    'blocks apart with bare hands': 'bloques con las manos desnudas',
+    'second power · uppercut': 'segundo poder · gancho',
+    'squared — the Q power, twice': 'al cuadrado — el poder Q, dos veces',
+    'bare hands': 'manos desnudas',
+    'choose a slot (number pad too)': 'elige una ranura (num. también)',
+    'cycle through what you hold': 'rota lo que llevas',
+    'pause  (ESC also works)': 'pausar  (ESC también funciona)',
+    'this page, any time': 'esta página, cuando quieras',
+    'gem totals that land on a perfect': 'totales de gemas que caen en un',
+    'square — 4, 9, 16, 25 — pay out': 'cuadrado perfecto — 4, 9, 16, 25 — dan premio',
+    'purple runes set a sum. Answer it': 'las runas moradas plantean una suma. Respóndela',
+    'for 1-UPs and new abilities': 'para vidas extra y nuevas habilidades',
+
+    'Wind Plant': 'Planta de Viento', 'Q gust · E twin orbs': 'Q ráfaga · E orbes gemelos',
+    'gust': 'ráfaga', 'twin orbs': 'orbes gemelos',
+    'Electric Plant': 'Planta Eléctrica', 'Q zap ray · E blast off': 'Q rayo · E despegue',
+    'zap': 'rayo', 'blast off': 'despegue',
+    'Lava Mushroom': 'Hongo de Lava', 'Q magma ball · E eruption': 'Q bola de magma · E erupción',
+    'magma': 'magma', 'eruption': 'erupción',
+    'Earth Plant': 'Planta de Tierra', 'Q spike row · E spike nova': 'Q fila de púas · E nova de púas',
+    'spikes': 'púas', 'nova': 'nova',
+    'Water Mushroom': 'Hongo de Agua', 'Q blinding squirt · E freeze': 'Q chorro cegador · E congelar',
+    'blind': 'cegar', 'freeze': 'congelar',
+
+    'Swift Feet': 'Pies Ligeros', 'Jay runs faster': 'Jay corre más rápido',
+    'Gem Magnet': 'Imán de Gemas', 'gems come to you': 'las gemas vienen a ti',
+    'Extra Heart': 'Corazón Extra', 'one more heart': 'un corazón más',
+    'Squared Mind': 'Mente al Cuadrado', 'TAB doubles E as well as Q': 'TAB duplica E además de Q',
+    'Feather Fall': 'Caída de Pluma', 'you fall gently': 'caes suavemente',
+
+    'Emerald Plains': 'Llanuras Esmeralda',
+    'Dripstone Deep': 'Profundidad de Estalactitas',
+    'Sunburn Dunes': 'Dunas Abrasadoras',
+    'Cinder Hollow': 'Hondonada de Cenizas',
+    'The Cobalt Castle': 'El Castillo de Cobalto',
+
+    'Arrows or WASD to move': 'Flechas o WASD para moverte',
+    'SPACE again in mid-air jumps higher': 'ESPACIO otra vez en el aire salta más alto',
+    'Walk through things to pick them up': 'Camina sobre las cosas para recogerlas',
+    'Hold Q to punch blocks apart': 'Mantén Q para romper bloques',
+    'Trunks are climbable — press UP': 'Los troncos se pueden trepar — pulsa ARRIBA',
+    'a hole. of course you are going in': 'un agujero. claro que vas a entrar',
+    'Q = spikes   E = big spike': 'Q = púas   E = púa grande',
+    'Q = blind   E = freeze': 'Q = cegar   E = congelar',
+    'Q = zap   E = sky boost': 'Q = rayo   E = impulso al cielo',
+    'Q = magma ball   E = eruption': 'Q = bola de magma   E = erupción',
+    'the gate stands open': 'la puerta está abierta',
+    'DOWN + SPACE drops through wood': 'ABAJO + ESPACIO cae por la madera',
+    'something is sealed in there': 'algo está sellado ahí dentro',
+    'UP to climb': 'ARRIBA para trepar',
+
+    'nothing to cycle to yet': 'nada más que rotar todavía',
+    'bare hands it is': 'serán manos desnudas',
+    'Q punches blocks apart · E uppercut': 'Q rompe bloques · E gancho',
+    '1-UP': 'VIDA EXTRA', '1-UP!': '¡VIDA EXTRA!',
+    'all abilities already found': 'ya encontraste todas las habilidades',
+    'the rune rewards a sharp mind': 'la runa premia una mente aguda',
+    'a heart returns': 'un corazón regresa',
+    'perfect square': 'cuadrado perfecto',
+    'inventory full': 'inventario lleno',
+    'five is the limit — press 1-5': 'cinco es el límite — pulsa 1-5',
+    'EXPLORER MODE ON': 'MODO EXPLORADOR ACTIVO',
+    '144 = 12²  ·  Jay cannot die': '144 = 12²  ·  Jay no puede morir',
+    'explorer mode off': 'modo explorador desactivado',
+    'back to five lives': 'de vuelta a cinco vidas',
+    'the void gave you back': 'el vacío te devolvió',
+    'that would have hurt': 'eso habría dolido',
+    'rescued': 'rescatado',
+    'reality restored': 'realidad restaurada',
+    'mostly': 'más o menos',
+    'gems ×2': 'gemas ×2',
+    'OOF': 'AY',
+    'blind!': '¡ciego!',
+    'frozen!': '¡congelado!',
+    'BLAST OFF': 'DESPEGUE',
+
+    'ROOT': 'RAÍZ',
+    'PHYSICS.HACK': 'FÍSICA.HACK', 'MOB.SPAWN': 'CRIATURA.GENERAR', 'STRUCTURE.GEN': 'ESTRUCTURA.GEN',
+    'DUPLICATE': 'DUPLICAR', '>> RESUME GAME': '>> REANUDAR JUEGO',
+    'LOW GRAVITY': 'GRAVEDAD BAJA', 'MOON JUMP': 'SALTO LUNAR', 'SUPER SPEED': 'SUPER VELOCIDAD',
+    'BOUNCY WORLD': 'MUNDO REBOTE', 'NOCLIP  [toggle]': 'SIN COLISIÓN  [act/desact]',
+    'RESTORE DEFAULTS': 'RESTAURAR VALORES',
+    'FRIENDLY  pig': 'AMISTOSO  cerdo', 'FRIENDLY  sheep': 'AMISTOSO  oveja', 'FRIENDLY  chicken': 'AMISTOSO  gallina',
+    'EVIL      slime': 'MALVADO  limo', 'EVIL      spikeling': 'MALVADO  spikeling', 'EVIL      guardian': 'MALVADO  guardián',
+    'PACIFY EVERYTHING': 'PACIFICAR TODO',
+    'BRIDGE': 'PUENTE', 'TOWER': 'TORRE', 'SAFE HOUSE': 'CASA SEGURA', 'STAIRWAY': 'ESCALERA', 'GEM SHOWER': 'LLUVIA DE GEMAS',
+    'ALL FIVE POWERS': 'LOS CINCO PODERES', 'DUPLICATE MOBS': 'DUPLICAR CRIATURAS',
+    'DOUBLE THE GEMS': 'DUPLICAR GEMAS', 'DOUBLE THE LIVES': 'DUPLICAR VIDAS',
+    'SEGMENTATION FAULT AT 0x5Q4RE': 'FALLO DE SEGMENTACIÓN EN 0x5Q4RE',
+    'vector escaped world bounds': 'vector escapó de los límites del mundo',
+    'J².SYS  //  DEVELOPER SHELL': 'J².SYS  //  CONSOLA DE DESARROLLADOR',
+    'you were not supposed to find this': 'no debías encontrar esto',
+    '↑↓ select   ENTER apply   ESC back / resume': '↑↓ elegir   ENTER aplicar   ESC volver / reanudar',
+  },
+  de: {
+    'Click to play': 'Zum Spielen klicken',
+
+    'JAY  SQUARED': 'JAY  ZUM QUADRAT',
+    'a blocky adventure in five biomes': 'ein Klötzchen-Abenteuer in fünf Biomen',
+    'PRESS SPACE TO PLAY': 'LEERTASTE ZUM SPIELEN',
+    'PRESS  ?  FOR HELP': 'DRÜCK  ?  FÜR HILFE',
+    'the controls live in there, and you can open it mid-game': 'dort stehen die Steuerungen, auch mitten im Spiel abrufbar',
+    '∞   EXPLORER MODE IS ON   ∞': '∞   ERKUNDUNGSMODUS AN   ∞',
+    'Jay is almost 8. He is very good at maths. That turns out to matter.': 'Jay ist fast 8. Er ist sehr gut in Mathe. Das erweist sich als wichtig.',
+
+    'LEVEL CLEAR': 'LEVEL GESCHAFFT',
+    'GAME OVER': 'SPIEL VORBEI',
+    'press SPACE to try again': 'LEERTASTE für einen neuen Versuch',
+    'THE CASTLE IS YOURS': 'DIE BURG GEHÖRT DIR',
+    'press SPACE to play again': 'LEERTASTE um erneut zu spielen',
+    'PAUSED': 'PAUSE',
+    'P or ESC to keep going': 'P oder ESC zum Weitermachen',
+    '∞  explorer mode is on': '∞  Erkundungsmodus aktiv',
+    'MATH RUNE': 'MATH-RUNE',
+    'type the number · ENTER to answer · ESC to walk away': 'Zahl eingeben · ENTER zum Antworten · ESC zum Weggehen',
+    'CORRECT': 'RICHTIG',
+
+    'TAB + Q  =  DOUBLE POWER': 'TAB + Q  =  DOPPELTE KRAFT',
+    'Q punch blocks    E uppercut    SHIFT / 1-5 to hold a plant': 'Q zerschlägt Blöcke    E Aufwärtshaken    SHIFT / 1-5 für eine Pflanze',
+    'Q power    E alt    TAB+Q ²    SHIFT cycles    0 fists': 'Q Kraft    E alt.    TAB+Q ²    SHIFT wechselt    0 Fäuste',
+
+    'HOW TO PLAY': 'SO WIRD GESPIELT',
+    'Jay Squared  ·  J²  ·  and some things are not on this list': 'Jay Squared  ·  J²  ·  und manches steht hier nicht',
+    'THE FIVE PLANTS  —  one hides in each biome': 'DIE FÜNF PFLANZEN  —  eine versteckt sich in jedem Biom',
+    '? or ESC to go back   ·   SPACE to play': '? oder ESC zurück   ·   LEERTASTE zum Spielen',
+    '? or ESC to get back to the game': '? oder ESC zurück zum Spiel',
+    'MOVING': 'BEWEGUNG',
+    'POWERS': 'KRÄFTE',
+    'WHAT YOU CARRY': 'WAS DU TRÄGST',
+    'THE GAME': 'DAS SPIEL',
+    "JAY'S MATHEMATICS": 'JAYS MATHEMATIK',
+    'walk  (A and D work too)': 'laufen  (A und D gehen auch)',
+    'jump · climb a ladder, vine or trunk': 'springen · Leiter, Ranke oder Stamm hoch',
+    'crouch · climb down': 'ducken · runterklettern',
+    'jump — press again in mid-air to': 'springen — in der Luft erneut drücken, um',
+    'go higher, up to five times': 'höher zu kommen, bis zu fünfmal',
+    'drop through wooden planks': 'durch Holzbohlen fallen',
+    'use power · hold it to punch': 'Kraft nutzen · halten zum Schlagen',
+    'blocks apart with bare hands': 'Blöcke mit bloßen Händen',
+    'second power · uppercut': 'zweite Kraft · Aufwärtshaken',
+    'squared — the Q power, twice': 'zum Quadrat — die Q-Kraft, doppelt',
+    'bare hands': 'bloße Hände',
+    'choose a slot (number pad too)': 'Fach wählen (Zehnertast. auch)',
+    'cycle through what you hold': 'durchwechseln, was du trägst',
+    'pause  (ESC also works)': 'pausieren  (ESC geht auch)',
+    'this page, any time': 'diese Seite, jederzeit',
+    'gem totals that land on a perfect': 'Edelstein-Summen, die auf einer',
+    'square — 4, 9, 16, 25 — pay out': 'Quadratzahl landen — 4, 9, 16, 25 — zahlen aus',
+    'purple runes set a sum. Answer it': 'lila Runen stellen eine Aufgabe. Löse sie',
+    'for 1-UPs and new abilities': 'für Extraleben und neue Fähigkeiten',
+
+    'Wind Plant': 'Windpflanze', 'Q gust · E twin orbs': 'Q Windstoß · E Zwillingskugeln',
+    'gust': 'Windstoß', 'twin orbs': 'Zwillingskugeln',
+    'Electric Plant': 'Elektropflanze', 'Q zap ray · E blast off': 'Q Blitzstrahl · E Abheben',
+    'zap': 'Blitz', 'blast off': 'Abheben',
+    'Lava Mushroom': 'Lavapilz', 'Q magma ball · E eruption': 'Q Magmakugel · E Eruption',
+    'magma': 'Magma', 'eruption': 'Eruption',
+    'Earth Plant': 'Erdpflanze', 'Q spike row · E spike nova': 'Q Stachelreihe · E Stachelnova',
+    'spikes': 'Stacheln', 'nova': 'Nova',
+    'Water Mushroom': 'Wasserpilz', 'Q blinding squirt · E freeze': 'Q blendender Strahl · E Einfrieren',
+    'blind': 'blenden', 'freeze': 'Einfrieren',
+
+    'Swift Feet': 'Flinke Füße', 'Jay runs faster': 'Jay rennt schneller',
+    'Gem Magnet': 'Edelstein-Magnet', 'gems come to you': 'Edelsteine kommen zu dir',
+    'Extra Heart': 'Extra-Herz', 'one more heart': 'ein Herz mehr',
+    'Squared Mind': 'Quadratischer Verstand', 'TAB doubles E as well as Q': 'TAB verdoppelt auch E, nicht nur Q',
+    'Feather Fall': 'Federfall', 'you fall gently': 'du fällst sanft',
+
+    'Emerald Plains': 'Smaragdebene',
+    'Dripstone Deep': 'Tropfsteintiefe',
+    'Sunburn Dunes': 'Sonnenbrand-Dünen',
+    'Cinder Hollow': 'Ascheschlucht',
+    'The Cobalt Castle': 'Das Kobaltschloss',
+
+    'Arrows or WASD to move': 'Pfeiltasten oder WASD zum Bewegen',
+    'SPACE again in mid-air jumps higher': 'LEERTASTE in der Luft springt höher',
+    'Walk through things to pick them up': 'Durchlaufen zum Aufsammeln',
+    'Hold Q to punch blocks apart': 'Q halten, um Blöcke zu zerschlagen',
+    'Trunks are climbable — press UP': 'Stämme sind erkletterbar — HOCH drücken',
+    'a hole. of course you are going in': 'ein Loch. natürlich gehst du rein',
+    'Q = spikes   E = big spike': 'Q = Stacheln   E = großer Stachel',
+    'Q = blind   E = freeze': 'Q = blenden   E = einfrieren',
+    'Q = zap   E = sky boost': 'Q = Blitz   E = Himmelsschub',
+    'Q = magma ball   E = eruption': 'Q = Magmakugel   E = Eruption',
+    'the gate stands open': 'das Tor steht offen',
+    'DOWN + SPACE drops through wood': 'RUNTER + LEERTASTE fällt durch Holz',
+    'something is sealed in there': 'dort drinnen ist etwas versiegelt',
+    'UP to climb': 'HOCH zum Klettern',
+
+    'nothing to cycle to yet': 'noch nichts zum Wechseln',
+    'bare hands it is': 'dann eben bloße Hände',
+    'Q punches blocks apart · E uppercut': 'Q zerschlägt Blöcke · E Aufwärtshaken',
+    '1-UP': 'EXTRALEBEN', '1-UP!': 'EXTRALEBEN!',
+    'all abilities already found': 'alle Fähigkeiten bereits gefunden',
+    'the rune rewards a sharp mind': 'die Rune belohnt einen scharfen Verstand',
+    'a heart returns': 'ein Herz kehrt zurück',
+    'perfect square': 'Quadratzahl',
+    'inventory full': 'Inventar voll',
+    'five is the limit — press 1-5': 'fünf ist das Limit — drücke 1-5',
+    'EXPLORER MODE ON': 'ERKUNDUNGSMODUS AN',
+    '144 = 12²  ·  Jay cannot die': '144 = 12²  ·  Jay kann nicht sterben',
+    'explorer mode off': 'Erkundungsmodus aus',
+    'back to five lives': 'zurück zu fünf Leben',
+    'the void gave you back': 'die Leere gab dich zurück',
+    'that would have hurt': 'das hätte wehgetan',
+    'rescued': 'gerettet',
+    'reality restored': 'Realität wiederhergestellt',
+    'mostly': 'größtenteils',
+    'gems ×2': 'Edelsteine ×2',
+    'OOF': 'AUA',
+    'blind!': 'geblendet!',
+    'frozen!': 'eingefroren!',
+    'BLAST OFF': 'ABHEBEN',
+
+    'ROOT': 'WURZEL',
+    'PHYSICS.HACK': 'PHYSIK.HACK', 'MOB.SPAWN': 'KREATUR.SPAWN', 'STRUCTURE.GEN': 'STRUKTUR.GEN',
+    'DUPLICATE': 'DUPLIZIEREN', '>> RESUME GAME': '>> SPIEL FORTSETZEN',
+    'LOW GRAVITY': 'NIEDRIGE SCHWERKRAFT', 'MOON JUMP': 'MONDSPRUNG', 'SUPER SPEED': 'SUPERGESCHWINDIGKEIT',
+    'BOUNCY WORLD': 'HÜPFWELT', 'NOCLIP  [toggle]': 'DURCHGEHEN  [umschalten]',
+    'RESTORE DEFAULTS': 'STANDARD WIEDERHERSTELLEN',
+    'FRIENDLY  pig': 'FREUNDLICH  Schwein', 'FRIENDLY  sheep': 'FREUNDLICH  Schaf', 'FRIENDLY  chicken': 'FREUNDLICH  Huhn',
+    'EVIL      slime': 'BÖSE  Schleim', 'EVIL      spikeling': 'BÖSE  Spikeling', 'EVIL      guardian': 'BÖSE  Wächter',
+    'PACIFY EVERYTHING': 'ALLES BESÄNFTIGEN',
+    'BRIDGE': 'BRÜCKE', 'TOWER': 'TURM', 'SAFE HOUSE': 'SICHERES HAUS', 'STAIRWAY': 'TREPPE', 'GEM SHOWER': 'EDELSTEINREGEN',
+    'ALL FIVE POWERS': 'ALLE FÜNF KRÄFTE', 'DUPLICATE MOBS': 'KREATUREN DUPLIZIEREN',
+    'DOUBLE THE GEMS': 'EDELSTEINE VERDOPPELN', 'DOUBLE THE LIVES': 'LEBEN VERDOPPELN',
+    'SEGMENTATION FAULT AT 0x5Q4RE': 'SEGMENTIERUNGSFEHLER BEI 0x5Q4RE',
+    'vector escaped world bounds': 'Vektor entkam den Weltgrenzen',
+    'J².SYS  //  DEVELOPER SHELL': 'J².SYS  //  ENTWICKLER-SHELL',
+    'you were not supposed to find this': 'das solltest du nicht finden',
+    '↑↓ select   ENTER apply   ESC back / resume': '↑↓ wählen   ENTER anwenden   ESC zurück / weiter',
+  },
+};
+
+const STRINGS_F = {
+  livesLeft: {
+    en: (n) => n >= 0 ? n + ' lives left' : 'no lives left',
+    es: (n) => n >= 0 ? n + ' vidas restantes' : 'sin vidas restantes',
+    de: (n) => n >= 0 ? n + ' Leben übrig' : 'keine Leben übrig',
+  },
+  levelLabel: {
+    en: (n, name) => 'LEVEL ' + n + '  ·  ' + name,
+    es: (n, name) => 'NIVEL ' + n + '  ·  ' + name,
+    de: (n, name) => 'LEVEL ' + n + '  ·  ' + name,
+  },
+  nextSquareAt: {
+    en: (n) => 'next ² at ' + n,
+    es: (n) => 'próx. ² en ' + n,
+    de: (n) => 'nächstes ² bei ' + n,
+  },
+  gemsCount: {
+    en: (n) => n + ' gems',
+    es: (n) => n + ' gemas',
+    de: (n) => n + ' Edelsteine',
+  },
+  gameOverStats: {
+    en: (g, s) => g + ' gems   ·   ' + s + ' points',
+    es: (g, s) => g + ' gemas   ·   ' + s + ' puntos',
+    de: (g, s) => g + ' Edelsteine   ·   ' + s + ' Punkte',
+  },
+  leftOver: {
+    en: (r, rem) => 'that is ' + r + '² and ' + rem + ' left over',
+    es: (r, rem) => 'eso es ' + r + '² y sobran ' + rem,
+    de: (r, rem) => 'das ist ' + r + '² und ' + rem + ' bleiben übrig',
+  },
+  winStats: {
+    en: (g, s) => 'Jay collected ' + g + ' gems and ' + s + ' points',
+    es: (g, s) => 'Jay recolectó ' + g + ' gemas y ' + s + ' puntos',
+    de: (g, s) => 'Jay hat ' + g + ' Edelsteine und ' + s + ' Punkte gesammelt',
+  },
+  winAbilities: {
+    en: (g, r, n) => '√' + g + ' ≈ ' + r + '  ·  abilities found: ' + n + '/5',
+    es: (g, r, n) => '√' + g + ' ≈ ' + r + '  ·  habilidades halladas: ' + n + '/5',
+    de: (g, r, n) => '√' + g + ' ≈ ' + r + '  ·  Fähigkeiten gefunden: ' + n + '/5',
+  },
+  notQuite: {
+    en: (n) => 'NOT QUITE — it was ' + n,
+    es: (n) => 'CASI — era ' + n,
+    de: (n) => 'FAST — es war ' + n,
+  },
+  slotEmpty: {
+    en: (n) => 'slot ' + n + ' is empty',
+    es: (n) => 'ranura ' + n + ' vacía',
+    de: (n) => 'Fach ' + n + ' ist leer',
+  },
+  recharged: {
+    en: (name) => name + ' recharged',
+    es: (name) => name + ' recargado',
+    de: (name) => name + ' aufgeladen',
+  },
+  toSlot: {
+    en: (name, n) => name + '  →  slot ' + n,
+    es: (name, n) => name + '  →  ranura ' + n,
+    de: (name, n) => name + '  →  Fach ' + n,
+  },
+  abilityLabel: {
+    en: (name) => 'ABILITY: ' + name,
+    es: (name) => 'HABILIDAD: ' + name,
+    de: (name) => 'FÄHIGKEIT: ' + name,
+  },
+  gemsSquared: {
+    en: (n, r) => n + ' gems = ' + r + ' squared',
+    es: (n, r) => n + ' gemas = ' + r + ' al cuadrado',
+    de: (n, r) => n + ' Edelsteine = ' + r + ' im Quadrat',
+  },
+  perfectSquareHeart: {
+    en: (r) => 'perfect square: ' + r + '²',
+    es: (r) => 'cuadrado perfecto: ' + r + '²',
+    de: (r) => 'Quadratzahl: ' + r + '²',
+  },
+  levelOfTotal: {
+    en: (n, total) => 'level ' + n + ' of ' + total,
+    es: (n, total) => 'nivel ' + n + ' de ' + total,
+    de: (n, total) => 'Level ' + n + ' von ' + total,
+  },
+  blastN: {
+    en: (n) => 'BLAST  ' + n + '!',
+    es: (n) => 'EXPLOSIÓN  ' + n + '!',
+    de: (n) => 'WUCHT  ' + n + '!',
+  },
+  mobsDown: {
+    en: (n) => n + ' down',
+    es: (n) => n + ' abajo',
+    de: (n) => n + ' erledigt',
+  },
+};
+
+function TR(s) {
+  if (G.lang === 'en') return s;
+  const table = STRINGS[G.lang];
+  return (table && table[s]) || s;
+}
+function TRF(key, ...args) {
+  const entry = STRINGS_F[key];
+  if (!entry) return '';
+  const fn = entry[G.lang] || entry.en;
+  return fn(...args);
+}
+
+/* The start-screen hint that teaches players about L. It auto-cycles through
+   each supported language's own phrasing every couple of seconds; picking a
+   language interrupts the cycle for a beat to confirm the choice, in that
+   language, before resuming. */
+const LANG_HINT = {
+  en: 'press L to change language',
+  es: 'pulsa L para cambiar de idioma',
+  de: 'drücke L, um die Sprache zu wechseln',
+};
+const LANG_SELECTED = {
+  en: (name) => 'you selected ' + name,
+  es: (name) => 'seleccionaste ' + name,
+  de: (name) => 'du hast ' + name + ' ausgewählt',
 };
 
 /* --- audio: a very small square-wave blip synth --------------------------- */
@@ -552,7 +975,7 @@ class World {
     this.cfg = cfg;
     this.index = index;
     this.w = cfg.w; this.h = cfg.h;
-    this.name = cfg.name; this.biome = cfg.biome;
+    this.biome = cfg.biome;
     this.tiles = new Uint8Array(this.w * this.h);
     this.surface = new Int16Array(this.w).fill(cfg.h - 12);
     this.spawn = { x: 6 * TILE, y: 10 * TILE };
@@ -564,6 +987,9 @@ class World {
     this.hints = [];
     this.decor = [];
   }
+  /* a live lookup rather than a copied field, so the HUD relabels itself the
+     instant the language changes instead of waiting for the next level build */
+  get name() { return TR(this.cfg.name); }
   idx(x, y) { return y * this.w + x; }
   get(x, y) {
     if (x < 0 || x >= this.w) return T.BEDROCK;
@@ -1124,6 +1550,7 @@ function placeMobs(w, rnd) {
    ENTITIES — Jay, mobs, pickups, projectiles, particles, tile collision
    ========================================================================== */
 
+const initialLang = loadLang();
 const G = {
   world: null, player: null,
   /* gemEnts = the pickups lying in the level.  G.gems = how many Jay has counted. */
@@ -1142,6 +1569,9 @@ const G = {
   runsCompleted: 0,
   immortal: false,   // the 144 code. Deliberately NOT reset by startRun().
   codeBuf: '',
+  lang: initialLang,           // en | es | de — cycled with L, persisted to localStorage
+  langPickT: 0,                // title screen: seconds left showing "you selected X"
+  langShown: initialLang !== 'en',  // has the corner language badge earned its place yet?
 };
 
 /* `to` is an optional {x, y} in view space. Given one, the banner does not fade
@@ -1287,13 +1717,13 @@ class Player extends Entity {
     SFX.menu();
     if (slot === -1) {
       this.sel = -1;
-      say('bare hands', 'Q punches blocks apart · E uppercut', '#f2c79c', 1.6);
+      say(TR('bare hands'), TR('Q punches blocks apart · E uppercut'), '#f2c79c', 1.6);
       return;
     }
     const it = this.inv[slot];
     if (!it) {
       this.sel = -1;
-      say('slot ' + (slot + 1) + ' is empty', 'bare hands it is', '#8d9bb5', 1.4);
+      say(TRF('slotEmpty', slot + 1), TR('bare hands it is'), '#8d9bb5', 1.4);
       return;
     }
     this.sel = slot;
@@ -1307,7 +1737,7 @@ class Player extends Entity {
     for (let i = 0; i < 5; i++) if (this.inv[i]) ring.push(i);
     if (ring.length === 1) {
       this.sel = -1;
-      say('bare hands', 'nothing to cycle to yet', '#8d9bb5', 1.2);
+      say(TR('bare hands'), TR('nothing to cycle to yet'), '#8d9bb5', 1.2);
       SFX.menu();
       return;
     }
@@ -1559,15 +1989,15 @@ class Player extends Entity {
 
   addItem(kind) {
     if (this.inv.includes(kind)) {
-      say(POWERS[kind].name + ' recharged', POWERS[kind].blurb, POWERS[kind].color, 2);
+      say(TRF('recharged', POWERS[kind].name), POWERS[kind].blurb, POWERS[kind].color, 2);
       return true;
     }
     const slot = this.inv.indexOf(null);
-    if (slot === -1) { say('inventory full', 'five is the limit — press 1-5', '#ff9d6b', 2); return false; }
+    if (slot === -1) { say(TR('inventory full'), TR('five is the limit — press 1-5'), '#ff9d6b', 2); return false; }
     this.inv[slot] = kind;
     this.sel = slot;
     SFX.pickup();
-    say(POWERS[kind].name + '  →  slot ' + (slot + 1), POWERS[kind].blurb, POWERS[kind].color, 3);
+    say(TRF('toSlot', POWERS[kind].name, slot + 1), POWERS[kind].blurb, POWERS[kind].color, 3);
     return true;
   }
 }
@@ -1830,11 +2260,11 @@ class Shot extends Entity {
         m.burn = 3; m.damage(2); break;
       case 'water':
         m.blind = 4; m.damage(0.5);
-        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: 'blind!', color: '#8fd3ff' });
+        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: TR('blind!'), color: '#8fd3ff' });
         break;
       case 'ice':
         m.frozen = 4.5; m.vx = 0;
-        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: 'frozen!', color: '#bff0ff' });
+        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: TR('frozen!'), color: '#bff0ff' });
         break;
       case 'orb':
         break;
@@ -2001,9 +2431,9 @@ function updateParticles(dt) {
 
 const POWERS = {
   wind: {
-    name: 'Wind Plant', short: 'WIND', color: '#bfe6ff', color2: '#7fc4ee',
-    blurb: 'Q gust · E twin orbs',
-    qd: 'gust', ed: 'twin orbs',
+    get name() { return TR('Wind Plant'); }, short: 'WIND', color: '#bfe6ff', color2: '#7fc4ee',
+    get blurb() { return TR('Q gust · E twin orbs'); },
+    get qd() { return TR('gust'); }, get ed() { return TR('twin orbs'); },
     cd: 0.42,
     q(p, doubled) {
       const f = p.facing;
@@ -2031,9 +2461,9 @@ const POWERS = {
   },
 
   electric: {
-    name: 'Electric Plant', short: 'ZAP', color: '#ffe680', color2: '#ffbe2e',
-    blurb: 'Q zap ray · E blast off',
-    qd: 'zap', ed: 'blast off',
+    get name() { return TR('Electric Plant'); }, short: 'ZAP', color: '#ffe680', color2: '#ffbe2e',
+    get blurb() { return TR('Q zap ray · E blast off'); },
+    get qd() { return TR('zap'); }, get ed() { return TR('blast off'); },
     cd: 0.5,
     q(p, doubled) {
       const f = p.facing;
@@ -2076,16 +2506,16 @@ const POWERS = {
       SFX.zap();
       G.pops.push({
         x: p.cx, y: p.y - 8, t: 1,
-        text: n ? 'BLAST  ' + n + '!' : 'BLAST OFF',
+        text: n ? TRF('blastN', n) : TR('BLAST OFF'),
         color: '#ffe680',
       });
     },
   },
 
   lava: {
-    name: 'Lava Mushroom', short: 'MAGMA', color: '#ff9a4d', color2: '#e0491a',
-    blurb: 'Q magma ball · E eruption',
-    qd: 'magma', ed: 'eruption',
+    get name() { return TR('Lava Mushroom'); }, short: 'MAGMA', color: '#ff9a4d', color2: '#e0491a',
+    get blurb() { return TR('Q magma ball · E eruption'); },
+    get qd() { return TR('magma'); }, get ed() { return TR('eruption'); },
     cd: 0.4,
     q(p, doubled) {
       const f = p.facing;
@@ -2107,9 +2537,9 @@ const POWERS = {
   },
 
   earth: {
-    name: 'Earth Plant', short: 'EARTH', color: '#a9d86a', color2: '#6f9c39',
-    blurb: 'Q spike row · E spike nova',
-    qd: 'spikes', ed: 'nova',
+    get name() { return TR('Earth Plant'); }, short: 'EARTH', color: '#a9d86a', color2: '#6f9c39',
+    get blurb() { return TR('Q spike row · E spike nova'); },
+    get qd() { return TR('spikes'); }, get ed() { return TR('nova'); },
     cd: 0.55,
     q(p, doubled) {
       const f = p.facing;
@@ -2143,14 +2573,14 @@ const POWERS = {
           (Math.random() - .5) * 90, -Math.random() * 260, '#8f6a3f', 0.7);
       G.cam.shake = 9;
       SFX.rumble();
-      if (n) G.pops.push({ x: p.cx, y: p.y - 10, t: 1, text: n + ' down', color: '#a9d86a' });
+      if (n) G.pops.push({ x: p.cx, y: p.y - 10, t: 1, text: TRF('mobsDown', n), color: '#a9d86a' });
     },
   },
 
   water: {
-    name: 'Water Mushroom', short: 'WATER', color: '#8fd3ff', color2: '#3f8fd6',
-    blurb: 'Q blinding squirt · E freeze',
-    qd: 'blind', ed: 'freeze',
+    get name() { return TR('Water Mushroom'); }, short: 'WATER', color: '#8fd3ff', color2: '#3f8fd6',
+    get blurb() { return TR('Q blinding squirt · E freeze'); },
+    get qd() { return TR('blind'); }, get ed() { return TR('freeze'); },
     cd: 0.35,
     q(p, doubled) {
       const f = p.facing;
@@ -2288,23 +2718,23 @@ function drawPowerIcon(g, kind, x, y, s, t) {
    ========================================================================== */
 
 const ABILITIES = {
-  swift:   { name: 'Swift Feet',    desc: 'Jay runs faster' },
-  magnet:  { name: 'Gem Magnet',    desc: 'gems come to you' },
-  heart:   { name: 'Extra Heart',   desc: 'one more heart' },
-  square:  { name: 'Squared Mind',  desc: 'TAB doubles E as well as Q' },
-  feather: { name: 'Feather Fall',  desc: 'you fall gently' },
+  swift:   { get name() { return TR('Swift Feet'); },   get desc() { return TR('Jay runs faster'); } },
+  magnet:  { get name() { return TR('Gem Magnet'); },   get desc() { return TR('gems come to you'); } },
+  heart:   { get name() { return TR('Extra Heart'); },  get desc() { return TR('one more heart'); } },
+  square:  { get name() { return TR('Squared Mind'); }, get desc() { return TR('TAB doubles E as well as Q'); } },
+  feather: { get name() { return TR('Feather Fall'); }, get desc() { return TR('you fall gently'); } },
 };
 
 function grantAbility(key) {
   if (!key) {
     const pool = Object.keys(ABILITIES).filter(k => !G.abilities.has(k));
-    if (!pool.length) { G.lives++; say('1-UP', 'all abilities already found', '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); return; }
+    if (!pool.length) { G.lives++; say(TR('1-UP'), TR('all abilities already found'), '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); return; }
     key = pool[Math.floor(Math.random() * pool.length)];
   }
   G.abilities.add(key);
   if (key === 'heart') { G.player.maxHp++; G.player.heal(2); }
   // collapses into the row this ability now occupies in the bottom-left list
-  say('ABILITY: ' + ABILITIES[key].name, ABILITIES[key].desc, '#c7a8ff', 4.5,
+  say(TRF('abilityLabel', ABILITIES[key].name), ABILITIES[key].desc, '#c7a8ff', 4.5,
     HUD_HOME.ability(G.abilities.size - 1));
   SFX.oneUp();
 }
@@ -2326,10 +2756,10 @@ function collectGem(x, y) {
     G.flash = Math.max(G.flash, 0.12);
     if (!G.squaresFound.has(n)) {
       G.squaresFound.add(n);
-      if (r % 5 === 0) { G.lives++; say('1-UP!', n + ' gems = ' + r + ' squared', '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
-      else if (r % 3 === 0) { G.player.heal(1); say('perfect square: ' + r + '²', 'a heart returns', '#9ff0c0', 3.2, HUD_HOME.hearts()); }
+      if (r % 5 === 0) { G.lives++; say(TR('1-UP!'), TRF('gemsSquared', n, r), '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
+      else if (r % 3 === 0) { G.player.heal(1); say(TRF('perfectSquareHeart', r), TR('a heart returns'), '#9ff0c0', 3.2, HUD_HOME.hearts()); }
       else if (r === 4) { grantAbility('magnet'); }
-      else say('perfect square', n + ' = ' + r + ' × ' + r, '#9ff0c0', 2);
+      else say(TR('perfect square'), n + ' = ' + r + ' × ' + r, '#9ff0c0', 2);
     }
   }
 }
@@ -2403,18 +2833,18 @@ function submitRune() {
   if (R.input === '') return;
   const val = parseInt(R.input, 10);
   if (val === R.ans) {
-    R.done = true; R.doneT = 1.5; R.msg = 'CORRECT';
+    R.done = true; R.doneT = 1.5; R.msg = 'CORRECT'; R.msgKind = 'correct';
     R.rune.used = true; R.rune.dead = true;
     G.score += 500;
     for (let i = 0; i < 30; i++)
       spawnParticle(R.rune.cx, R.rune.cy, (Math.random() - .5) * 240, (Math.random() - .5) * 240, '#c7a8ff', 0.8);
     setTimeout(() => {
-      if (R.kind === 'oneup') { G.lives++; say('1-UP!', 'the rune rewards a sharp mind', '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
+      if (R.kind === 'oneup') { G.lives++; say(TR('1-UP!'), TR('the rune rewards a sharp mind'), '#9ff0c0', 4.5, HUD_HOME.lives()); SFX.oneUp(); }
       else if (R.kind === 'ability') grantAbility(null);
       else { for (let i = 0; i < 9; i++) setTimeout(() => collectGem(G.player.cx, G.player.cy - 8), i * 90); }
     }, 500);
   } else {
-    R.done = true; R.doneT = 1.4; R.msg = 'NOT QUITE — it was ' + R.ans;
+    R.done = true; R.doneT = 1.4; R.msg = 'NOT QUITE — it was ' + R.ans; R.msgKind = 'wrong';
     R.rune.cool = 3.5;
     Audio2.blip(160, 0.25, 'sawtooth', 0.6, -60);
   }
@@ -2447,7 +2877,7 @@ function buildLevel(index) {
   G.cam.y = clamp(G.player.cy - VIEW_H / 2, 0, W.h * TILE - VIEW_H);
   G.levelTime = 0;
   G.glitchUsedHere = false;      // the tear can be found once per level
-  say(W.name, 'level ' + (index + 1) + ' of ' + LEVELS.length, '#ffe9a8', 3);
+  say(W.name, TRF('levelOfTotal', index + 1, LEVELS.length), '#ffe9a8', 3);
 }
 
 function startRun() {
@@ -2455,6 +2885,7 @@ function startRun() {
   G.abilities = new Set();
   G.squaresFound = new Set();
   G.player = null;
+  G.langPickT = 0;
   resetPhysics();
   buildLevel(0);
   G.state = 'play';
@@ -2465,7 +2896,7 @@ function completeLevel() {
   G.clearT = 2.6;
   G.score += 1000 + G.player.hp * 250;
   SFX.door();
-  say('LEVEL CLEAR', G.world.name, '#ffe9a8', 2.6);
+  say(TR('LEVEL CLEAR'), G.world.name, '#ffe9a8', 2.6);
 }
 
 /* ======================= THE 144 CODE (12²) ==============================
@@ -2478,10 +2909,10 @@ function toggleImmortal() {
   G.codeBuf = '';
   if (G.immortal) {
     Audio2.arp([392, 523, 659, 784, 1046, 1318], 0.06, 'triangle');
-    say('EXPLORER MODE ON', '144 = 12²  ·  Jay cannot die', '#9ff0c0', 4.5);
+    say(TR('EXPLORER MODE ON'), TR('144 = 12²  ·  Jay cannot die'), '#9ff0c0', 4.5);
   } else {
     Audio2.arp([784, 587, 392], 0.07, 'square');
-    say('explorer mode off', 'back to five lives', '#ff9d6b', 3);
+    say(TR('explorer mode off'), TR('back to five lives'), '#ff9d6b', 3);
   }
   G.flash = 0.3;
 }
@@ -2512,7 +2943,7 @@ function rescue(reason) {
   G.shots = [];
   G.flash = 0.22;
   SFX.oneUp();
-  say('rescued', reason, '#9ff0c0', 2.2);
+  say(TR('rescued'), reason, '#9ff0c0', 2.2);
   for (let i = 0; i < 26; i++)
     spawnParticle(p.cx, p.cy, (Math.random() - .5) * 220, (Math.random() - .5) * 220, '#9ff0c0', 0.7);
 }
@@ -2520,7 +2951,7 @@ function rescue(reason) {
 function playerDied(cause) {
   if (G.state !== 'play') return;
   if (G.immortal) {
-    rescue(cause === 'the void' ? 'the void gave you back' : 'that would have hurt');
+    rescue(cause === 'the void' ? TR('the void gave you back') : TR('that would have hurt'));
     return;
   }
   G.state = 'dead';
@@ -2565,6 +2996,22 @@ function atTitle() {
   return G.state === 'title' || (G.state === 'help' && G.helpFrom === 'title');
 }
 
+/* L cycles English → Español → Deutsch → English. On the title screen the
+   language hint itself confirms the choice; everywhere else a small banner
+   announces it and collapses into a corner badge (see HUD_HOME.lang). */
+function cycleLang() {
+  const i = LANGS.indexOf(G.lang);
+  G.lang = LANGS[(i + 1) % LANGS.length];
+  saveLang(G.lang);
+  SFX.menu();
+  if (G.state === 'title') {
+    G.langPickT = 2;
+  } else {
+    G.langShown = true;
+    say(LANG_NAME[G.lang], '', '#8fd3ff', 1.3, HUD_HOME.lang());
+  }
+}
+
 /* ==========================================================================
    THE GLITCH — fall into the void while a magma ball is in flight
    ========================================================================== */
@@ -2599,7 +3046,7 @@ const GLITCH_ROOT = [
       const copy = G.mobs.filter(m => !m.dead).slice(0, 40);
       copy.forEach(m => G.mobs.push(new Mob(m.x + 10, m.y - 12, m.type, m.tamed)));
     }},
-    { label: 'DOUBLE THE GEMS', run: () => { const before = G.gems; for (let i = 0; i < before; i++) G.gems++; say('gems ×2', before + ' → ' + G.gems, '#9ff0c0'); } },
+    { label: 'DOUBLE THE GEMS', run: () => { const before = G.gems; for (let i = 0; i < before; i++) G.gems++; say(TR('gems ×2'), before + ' → ' + G.gems, '#9ff0c0'); } },
     { label: 'DOUBLE THE LIVES', run: () => { G.lives = Math.min(99, G.lives * 2 + 1); } },
   ]},
   { label: '>> RESUME GAME', run: () => closeGlitch() },
@@ -2675,7 +3122,7 @@ function updateGlitch(dt) {
     if (it.sub) { gl.path.push(gl.sel); gl.sel = 0; Audio2.blip(620, 0.05, 'square', 0.5); }
     else {
       it.run();
-      gl.log.unshift('> ' + it.label + '  ...OK');
+      gl.log.unshift('> ' + TR(it.label) + '  ...OK');
       gl.log = gl.log.slice(0, 5);
       Audio2.blip(880, 0.07, 'square', 0.6, -200);
       Audio2.noise(0.08, 0.25);
@@ -2692,7 +3139,7 @@ function closeGlitch() {
   G.player.invuln = 1.5;
   G.shots = [];
   G.state = 'play';
-  say('reality restored', 'mostly', '#a0ffd0', 2);
+  say(TR('reality restored'), TR('mostly'), '#a0ffd0', 2);
 }
 /* ==========================================================================
    RENDER — world, sprites, lighting, HUD, screens
@@ -3170,8 +3617,10 @@ function drawHintsHud(W, camX, camY) {
     const a = dx <= 100 ? 1 : clamp(1 - (dx - 100) / 70, 0, 1);
     if (a <= 0.03) continue;
 
+    // translated live, not baked in at level-build time, so L relabels signs too
+    const text = TR(h.text);
     hud.font = font;
-    const tw = hud.measureText(h.text).width;
+    const tw = hud.measureText(text).width;
     const bw = Math.round(tw + 16), bh = Math.round(size + 11);
     const bx = Math.round(sx - bw / 2), by = Math.round(sy - bh);
 
@@ -3184,9 +3633,9 @@ function drawHintsHud(W, camX, camY) {
     const base = inkBaseline(by + bh / 2, font, 'MHXWgy');
     hud.font = font; hud.textAlign = 'center';
     hud.fillStyle = 'rgba(0,0,0,.8)';              // shadow keeps it legible on bright sky
-    hud.fillText(h.text, sx + 1, base + 1);
+    hud.fillText(text, sx + 1, base + 1);
     hud.fillStyle = '#ffeec0';
-    hud.fillText(h.text, sx, base);
+    hud.fillText(text, sx, base);
     hud.globalAlpha = 1;
   }
 }
@@ -3383,9 +3832,9 @@ function drawHUD() {
   hud.fillStyle = '#bdffdc'; hud.fillRect(9, 23, 2, 3);
   hudText(String(G.gems), 18, 30, 9, '#9ff0c0');
   const nextSq = (Math.floor(Math.sqrt(G.gems)) + 1) ** 2;
-  hudText('next ² at ' + nextSq, 40, 30, 7.5, 'rgba(159,240,192,.6)');
+  hudText(TRF('nextSquareAt', nextSq), 40, 30, 7.5, 'rgba(159,240,192,.6)');
   hudText(String(G.score).padStart(6, '0'), VIEW_W - 8, 17, 10, '#ffe9a8', 'right');
-  hudText('LEVEL ' + (G.level + 1) + '  ·  ' + G.world.name.toUpperCase(), VIEW_W - 8, 29, 7.5, 'rgba(223,232,255,.55)', 'right');
+  hudText(TRF('levelLabel', G.level + 1, G.world.name.toUpperCase()), VIEW_W - 8, 29, 7.5, 'rgba(223,232,255,.55)', 'right');
 
   /* inventory — slot 0 is Jay's own hands, then the five carry slots */
   const slotW = 22, gap = 3, fistGap = 9;
@@ -3429,8 +3878,8 @@ function drawHUD() {
   }
 
   /* control legend */
-  const legend = IN.doubler() ? 'TAB + Q  =  DOUBLE POWER'
-    : (fistSel ? 'Q punch blocks    E uppercut    SHIFT / 1-5 to hold a plant'
+  const legend = IN.doubler() ? TR('TAB + Q  =  DOUBLE POWER')
+    : TR(fistSel ? 'Q punch blocks    E uppercut    SHIFT / 1-5 to hold a plant'
                : 'Q power    E alt    TAB+Q ²    SHIFT cycles    0 fists');
   hudText(legend, VIEW_W / 2, VIEW_H - 4, 7,
     IN.doubler() ? '#ffe98f' : 'rgba(200,215,255,.45)', 'center');
@@ -3446,16 +3895,20 @@ function drawHUD() {
   if (G.state === 'glitch') drawGlitchScreen();
   if (G.state === 'dead') {
     hud.fillStyle = 'rgba(6,8,16,.55)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-    hudText('OOF', VIEW_W / 2, VIEW_H / 2 - 4, 22, '#ff8a9a', 'center');
-    hudText(G.lives >= 0 ? G.lives + ' lives left' : 'no lives left', VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
+    hudText(TR('OOF'), VIEW_W / 2, VIEW_H / 2 - 4, 22, '#ff8a9a', 'center');
+    hudText(TRF('livesLeft', G.lives), VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
   }
   if (G.state === 'levelclear') {
     hud.fillStyle = 'rgba(6,8,16,.5)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-    hudText('LEVEL CLEAR', VIEW_W / 2, VIEW_H / 2 - 6, 20, '#ffe9a8', 'center');
-    hudText(G.world.name + '   ·   ' + G.gems + ' gems', VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
+    hudText(TR('LEVEL CLEAR'), VIEW_W / 2, VIEW_H / 2 - 6, 20, '#ffe9a8', 'center');
+    hudText(G.world.name + '   ·   ' + TRF('gemsCount', G.gems), VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
   }
   if (G.state === 'gameover') drawGameOver();
   if (G.state === 'win') drawWin();
+
+  /* persistent top-right language badge — earned the first time L is pressed
+     in-game (or restored from a previous session), stays up from then on */
+  if (G.langShown) hudMono(LANG_CODE[G.lang], VIEW_W - 8, 8, 6.5, 'rgba(200,215,255,.5)', 'right');
 
   /* banner — drawn dead last so it always reads on top of the rune box,
      the glitch screen, or any other overlay live at the moment. */
@@ -3501,6 +3954,8 @@ const HUD_HOME = {
   hearts: () => ({ x: 8 + (G.player.maxHp * 11) / 2, y: 13 }),
   // the purple ability list, bottom left — newest entry sits `row` up from the base
   ability: (row) => ({ x: 32, y: VIEW_H - 42 - 9 * row }),
+  // the persistent 2-letter language code, top right
+  lang: () => ({ x: VIEW_W - 12, y: 8 }),
 };
 
 function drawRuneModal() {
@@ -3508,14 +3963,14 @@ function drawRuneModal() {
   hud.fillStyle = 'rgba(6,8,18,.72)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
   const w = 210, h = 96, x = (VIEW_W - w) / 2, y = (VIEW_H - h) / 2;
   panel(x, y, w, h, 'rgba(22,16,44,.96)', '#a98cff');
-  hudText('MATH RUNE', VIEW_W / 2, y + 16, 9, '#c7a8ff', 'center');
+  hudText(TR('MATH RUNE'), VIEW_W / 2, y + 16, 9, '#c7a8ff', 'center');
   hudText(R.q + ' =', VIEW_W / 2, y + 44, 22, '#ffffff', 'center');
 
   /* Answer field. The caret is drawn as its own bar to the right of the digits —
      never concatenated into the string, or every blink would shove the centred
      number sideways. */
   const bw = 74, bx = (VIEW_W - bw) / 2, by = y + 52;
-  panel(bx, by, bw, 20, 'rgba(10,8,22,.9)', R.done ? (R.msg === 'CORRECT' ? '#7dffb0' : '#ff8a9a') : '#c7a8ff');
+  panel(bx, by, bw, 20, 'rgba(10,8,22,.9)', R.done ? (R.msgKind === 'correct' ? '#7dffb0' : '#ff8a9a') : '#c7a8ff');
 
   const digits = R.input;
   hud.font = 'bold 14px "Trebuchet MS", system-ui, sans-serif';
@@ -3532,8 +3987,11 @@ function drawRuneModal() {
   }
   // no underline here — the field already has its own outline
 
-  if (R.done) hudText(R.msg, VIEW_W / 2, y + h - 8, 8.5, R.msg === 'CORRECT' ? '#7dffb0' : '#ff8a9a', 'center');
-  else hudText('type the number · ENTER to answer · ESC to walk away', VIEW_W / 2, y + h - 8, 7, 'rgba(223,232,255,.55)', 'center');
+  if (R.done) {
+    const msg = R.msgKind === 'correct' ? TR('CORRECT') : TRF('notQuite', R.ans);
+    hudText(msg, VIEW_W / 2, y + h - 8, 8.5, R.msgKind === 'correct' ? '#7dffb0' : '#ff8a9a', 'center');
+  }
+  else hudText(TR('type the number · ENTER to answer · ESC to walk away'), VIEW_W / 2, y + h - 8, 7, 'rgba(223,232,255,.55)', 'center');
 }
 
 function drawGlitchScreen() {
@@ -3553,22 +4011,22 @@ function drawGlitchScreen() {
   }
 
   if (gl.boot > 0) {
-    hudMono('SEGMENTATION FAULT AT 0x5Q4RE', VIEW_W / 2, VIEW_H / 2 - 8, 11, '#7dffb0', 'center');
+    hudMono(TR('SEGMENTATION FAULT AT 0x5Q4RE'), VIEW_W / 2, VIEW_H / 2 - 8, 11, '#7dffb0', 'center');
     const via = (POWERS[gl.via] ? POWERS[gl.via].short : 'MAGMA').toLowerCase();
-    hudMono(via + ' vector escaped world bounds', VIEW_W / 2, VIEW_H / 2 + 6, 8, 'rgba(125,255,176,.6)', 'center');
+    hudMono(via + ' ' + TR('vector escaped world bounds'), VIEW_W / 2, VIEW_H / 2 + 6, 8, 'rgba(125,255,176,.6)', 'center');
     return;
   }
 
-  hudMono('J².SYS  //  DEVELOPER SHELL', 14, 22, 10, '#7dffb0');
-  hudMono('you were not supposed to find this', 14, 32, 7.5, 'rgba(125,255,176,.45)');
+  hudMono(TR('J².SYS  //  DEVELOPER SHELL'), 14, 22, 10, '#7dffb0');
+  hudMono(TR('you were not supposed to find this'), 14, 32, 7.5, 'rgba(125,255,176,.45)');
   hud.strokeStyle = 'rgba(125,255,176,.35)';
   hud.beginPath(); hud.moveTo(14, 38); hud.lineTo(VIEW_W - 14, 38); hud.stroke();
 
   const items = glitchItems();
-  const crumb = ['ROOT'].concat(G.glitch.path.map((i, n) => {
+  const crumb = [TR('ROOT')].concat(G.glitch.path.map((i, n) => {
     let list = GLITCH_ROOT;
     for (let k = 0; k < n; k++) list = list[G.glitch.path[k]].sub;
-    return list[i].label;
+    return TR(list[i].label);
   })).join(' / ');
   hudMono(crumb, 14, 48, 7.5, 'rgba(125,255,176,.55)');
 
@@ -3579,14 +4037,14 @@ function drawGlitchScreen() {
       hud.fillStyle = 'rgba(125,255,176,.16)';
       hud.fillRect(12, y - 9, VIEW_W - 24, 12);
     }
-    hudMono((sel ? '> ' : '  ') + it.label + (it.sub ? '  ▸' : ''), 18, y, 9.5,
+    hudMono((sel ? '> ' : '  ') + TR(it.label) + (it.sub ? '  ▸' : ''), 18, y, 9.5,
       sel ? '#c9ffe2' : 'rgba(125,255,176,.72)');
   });
 
   gl.log.forEach((line, i) => {
     hudMono(line, 14, VIEW_H - 30 + i * 9 - gl.log.length * 9 + 30, 7.5, 'rgba(125,255,176,.5)');
   });
-  hudMono('↑↓ select   ENTER apply   ESC back / resume', VIEW_W / 2, VIEW_H - 8, 7.5, 'rgba(125,255,176,.55)', 'center');
+  hudMono(TR('↑↓ select   ENTER apply   ESC back / resume'), VIEW_W / 2, VIEW_H - 8, 7.5, 'rgba(125,255,176,.55)', 'center');
 }
 
 /* ------------------------------- help ------------------------------------ */
@@ -3634,8 +4092,8 @@ function drawHelp() {
   const x = 14, y = 10, w = VIEW_W - 28, h = VIEW_H - 20;
   panel(x, y, w, h, 'rgba(14,18,36,.96)', 'rgba(255,233,168,.45)');
 
-  hudText('HOW TO PLAY', VIEW_W / 2, y + 16, 12, '#ffe9a8', 'center');
-  hudText('Jay Squared  ·  J²  ·  and some things are not on this list',
+  hudText(TR('HOW TO PLAY'), VIEW_W / 2, y + 16, 12, '#ffe9a8', 'center');
+  hudText(TR('Jay Squared  ·  J²  ·  and some things are not on this list'),
     VIEW_W / 2, y + 26, 7.5, 'rgba(200,215,255,.55)', 'center', 'normal');
   hud.fillStyle = 'rgba(255,233,168,.22)';
   hud.fillRect(x + 18, y + 31, w - 36, 1);
@@ -3654,7 +4112,7 @@ function drawHelp() {
       if (row.h) {
         const hb = inkBaseline(ry, headFont, 'MHXW');
         hud.font = headFont; hud.textAlign = 'left'; hud.fillStyle = '#9ff0c0';
-        hud.fillText(row.h, cx, hb);
+        hud.fillText(TR(row.h), cx, hb);
         hud.fillStyle = 'rgba(159,240,192,.25)';
         hud.fillRect(cx, Math.round(ry + 5), w / 2 - 40, 1);
         ry += rowH + 2;
@@ -3671,7 +4129,7 @@ function drawHelp() {
       const db = inkBaseline(ry, descFont, 'MHXWgy');
       hud.font = descFont; hud.textAlign = 'left';
       hud.fillStyle = 'rgba(223,232,255,.88)';
-      hud.fillText(row.d, cx + keyW, db);
+      hud.fillText(TR(row.d), cx + keyW, db);
       G.helpRows.push({
         cx, cy: ry, keyX: cx, descX: cx + keyW, hasKey: !!row.k, text: row.d,
         capCentre: capGeom ? capGeom.centre : null,
@@ -3687,7 +4145,7 @@ function drawHelp() {
   const sy = y + h - 56;
   hud.fillStyle = 'rgba(255,233,168,.16)';
   hud.fillRect(x + 18, sy, w - 36, 1);
-  hudText('THE FIVE PLANTS  —  one hides in each biome', x + 16, sy + 11, 7.5, '#9ff0c0', 'left');
+  hudText(TR('THE FIVE PLANTS  —  one hides in each biome'), x + 16, sy + 11, 7.5, '#9ff0c0', 'left');
   const cellW = (w - 26) / 5;
   POWER_ORDER.forEach((kind, i) => {
     const cx = x + 13 + i * cellW;
@@ -3700,8 +4158,8 @@ function drawHelp() {
     hudText('Q ' + d.qd + '  ·  E ' + d.ed, cx, sy + 36, 6.5, 'rgba(223,232,255,.66)', 'left', 'normal');
   });
 
-  hudText(G.helpFrom === 'title' ? '? or ESC to go back   ·   SPACE to play'
-                                : '? or ESC to get back to the game',
+  hudText(TR(G.helpFrom === 'title' ? '? or ESC to go back   ·   SPACE to play'
+                                : '? or ESC to get back to the game'),
     VIEW_W / 2, y + h - 6, 7.5, 'rgba(255,233,168,.75)', 'center');
 }
 
@@ -3723,41 +4181,48 @@ function drawTitle() {
   hud.fillStyle = '#8fd3ff'; hud.fillText('2', 22, -18);
   hud.restore();
 
-  hudText('JAY  SQUARED', VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
-  hudText('a blocky adventure in five biomes', VIEW_W / 2, 126, 8.5, 'rgba(200,215,255,.6)', 'center');
+  hudText(TR('JAY  SQUARED'), VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
+  hudText(TR('a blocky adventure in five biomes'), VIEW_W / 2, 126, 8.5, 'rgba(200,215,255,.6)', 'center');
 
   const pulse = 0.55 + Math.sin(t * 4) * 0.35;
   hud.globalAlpha = pulse;
-  hudText('PRESS SPACE TO PLAY', VIEW_W / 2, 162, 12, '#ffe9a8', 'center');
+  hudText(TR('PRESS SPACE TO PLAY'), VIEW_W / 2, 162, 12, '#ffe9a8', 'center');
   hud.globalAlpha = 1;
-  hudText('PRESS  ?  FOR HELP', VIEW_W / 2, 184, 10, 'rgba(159,240,192,.85)', 'center');
-  hudText('the controls live in there, and you can open it mid-game',
+  hudText(TR('PRESS  ?  FOR HELP'), VIEW_W / 2, 184, 10, 'rgba(159,240,192,.85)', 'center');
+  hudText(TR('the controls live in there, and you can open it mid-game'),
     VIEW_W / 2, 198, 7.5, 'rgba(200,215,255,.5)', 'center', 'normal');
 
-  if (G.immortal)
-    hudText('∞   EXPLORER MODE IS ON   ∞', VIEW_W / 2, 216, 9, '#9ff0c0', 'center');
+  /* auto-cycling language hint; a fresh L press interrupts it for a beat to
+     confirm the choice, in the language just picked, before resuming */
+  const langLine = G.langPickT > 0
+    ? LANG_SELECTED[G.lang](LANG_NAME[G.lang])
+    : LANG_HINT[LANGS[Math.floor(G.time / 2) % LANGS.length]];
+  hudText(langLine, VIEW_W / 2, 210, 7, 'rgba(200,215,255,.5)', 'center', 'normal');
 
-  hudText('Jay is almost 8. He is very good at maths. That turns out to matter.',
+  if (G.immortal)
+    hudText(TR('∞   EXPLORER MODE IS ON   ∞'), VIEW_W / 2, 226, 9, '#9ff0c0', 'center');
+
+  hudText(TR('Jay is almost 8. He is very good at maths. That turns out to matter.'),
     VIEW_W / 2, VIEW_H - 14, 8, 'rgba(159,240,192,.75)', 'center', 'normal');
 }
 
 function drawGameOver() {
   hud.fillStyle = 'rgba(6,8,16,.8)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-  hudText('GAME OVER', VIEW_W / 2, VIEW_H / 2 - 14, 26, '#ff8a9a', 'center');
-  hudText(G.gems + ' gems   ·   ' + G.score + ' points', VIEW_W / 2, VIEW_H / 2 + 6, 10, '#dfe8ff', 'center');
+  hudText(TR('GAME OVER'), VIEW_W / 2, VIEW_H / 2 - 14, 26, '#ff8a9a', 'center');
+  hudText(TRF('gameOverStats', G.gems, G.score), VIEW_W / 2, VIEW_H / 2 + 6, 10, '#dfe8ff', 'center');
   const r = Math.floor(Math.sqrt(G.gems));
-  hudText('that is ' + r + '² and ' + (G.gems - r * r) + ' left over', VIEW_W / 2, VIEW_H / 2 + 20, 8.5, 'rgba(159,240,192,.8)', 'center');
-  hudText('press SPACE to try again', VIEW_W / 2, VIEW_H / 2 + 42, 9, 'rgba(223,232,255,.7)', 'center');
+  hudText(TRF('leftOver', r, G.gems - r * r), VIEW_W / 2, VIEW_H / 2 + 20, 8.5, 'rgba(159,240,192,.8)', 'center');
+  hudText(TR('press SPACE to try again'), VIEW_W / 2, VIEW_H / 2 + 42, 9, 'rgba(223,232,255,.7)', 'center');
 }
 
 function drawWin() {
   hud.fillStyle = 'rgba(6,10,26,.82)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-  hudText('THE CASTLE IS YOURS', VIEW_W / 2, 76, 20, '#ffe9a8', 'center');
-  hudText('Jay collected ' + G.gems + ' gems and ' + G.score + ' points', VIEW_W / 2, 100, 10, '#dfe8ff', 'center');
+  hudText(TR('THE CASTLE IS YOURS'), VIEW_W / 2, 76, 20, '#ffe9a8', 'center');
+  hudText(TRF('winStats', G.gems, G.score), VIEW_W / 2, 100, 10, '#dfe8ff', 'center');
   const r = Math.floor(Math.sqrt(G.gems));
-  hudText('√' + G.gems + ' ≈ ' + r + '  ·  abilities found: ' + G.abilities.size + '/5',
+  hudText(TRF('winAbilities', G.gems, r, G.abilities.size),
     VIEW_W / 2, 116, 9, 'rgba(159,240,192,.85)', 'center');
-  hudText('press SPACE to play again', VIEW_W / 2, 156, 9.5, 'rgba(223,232,255,.7)', 'center');
+  hudText(TR('press SPACE to play again'), VIEW_W / 2, 156, 9.5, 'rgba(223,232,255,.7)', 'center');
 }
 /* ==========================================================================
    MAIN LOOP
@@ -3818,11 +4283,13 @@ function update(dt) {
   G.time += dt;
   if (G.flash > 0) G.flash -= dt;
   if (G.banner) { G.banner.t -= dt; if (G.banner.t <= 0) G.banner = null; }
+  if (IN.lang()) cycleLang();
   updateParticles(dt);
 
   switch (G.state) {
     case 'title':
       checkCheatCode();
+      if (G.langPickT > 0) G.langPickT = Math.max(0, G.langPickT - dt);
       if (IN.help()) { openHelp(); break; }
       if (Keys.justPressed('Space', 'Enter')) { startRun(); }
       else {
@@ -3935,10 +4402,10 @@ function render() {
   if (G.state === 'paused') {
     hud.fillStyle = 'rgba(6,8,16,.72)';
     hud.fillRect(0, 0, VIEW_W, VIEW_H);
-    hudText('PAUSED', VIEW_W / 2, VIEW_H / 2 - 10, 20, '#dfe8ff', 'center');
-    hudText('P or ESC to keep going', VIEW_W / 2, VIEW_H / 2 + 8, 9, 'rgba(200,215,255,.65)', 'center');
+    hudText(TR('PAUSED'), VIEW_W / 2, VIEW_H / 2 - 10, 20, '#dfe8ff', 'center');
+    hudText(TR('P or ESC to keep going'), VIEW_W / 2, VIEW_H / 2 + 8, 9, 'rgba(200,215,255,.65)', 'center');
     if (G.immortal)
-      hudText('\u221e  explorer mode is on', VIEW_W / 2, VIEW_H / 2 + 26, 8.5, '#9ff0c0', 'center');
+      hudText(TR('\u221e  explorer mode is on'), VIEW_W / 2, VIEW_H / 2 + 26, 8.5, '#9ff0c0', 'center');
   }
 }
 
@@ -3965,6 +4432,7 @@ function boot() {
   G.state = 'title';
   G.banner = null;
   const tap = document.getElementById('tapstart');
+  tap.textContent = TR('Click to play');
   const kick = () => { Audio2.unlock(); tap.style.display = 'none'; };
   addEventListener('pointerdown', kick);
   addEventListener('keydown', kick, { once: true });

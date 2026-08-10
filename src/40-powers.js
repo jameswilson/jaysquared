@@ -5,9 +5,9 @@
 
 const POWERS = {
   wind: {
-    name: 'Wind Plant', short: 'WIND', color: '#bfe6ff', color2: '#7fc4ee',
-    blurb: 'Q gust · E twin orbs',
-    qd: 'gust', ed: 'twin orbs',
+    get name() { return TR('Wind Plant'); }, short: 'WIND', color: '#bfe6ff', color2: '#7fc4ee',
+    get blurb() { return TR('Q gust · E twin orbs'); },
+    get qd() { return TR('gust'); }, get ed() { return TR('twin orbs'); },
     cd: 0.42,
     q(p, doubled) {
       const f = p.facing;
@@ -35,9 +35,9 @@ const POWERS = {
   },
 
   electric: {
-    name: 'Electric Plant', short: 'ZAP', color: '#ffe680', color2: '#ffbe2e',
-    blurb: 'Q zap ray · E blast off',
-    qd: 'zap', ed: 'blast off',
+    get name() { return TR('Electric Plant'); }, short: 'ZAP', color: '#ffe680', color2: '#ffbe2e',
+    get blurb() { return TR('Q zap ray · E blast off'); },
+    get qd() { return TR('zap'); }, get ed() { return TR('blast off'); },
     cd: 0.5,
     q(p, doubled) {
       const f = p.facing;
@@ -80,16 +80,16 @@ const POWERS = {
       SFX.zap();
       G.pops.push({
         x: p.cx, y: p.y - 8, t: 1,
-        text: n ? 'BLAST  ' + n + '!' : 'BLAST OFF',
+        text: n ? TRF('blastN', n) : TR('BLAST OFF'),
         color: '#ffe680',
       });
     },
   },
 
   lava: {
-    name: 'Lava Mushroom', short: 'MAGMA', color: '#ff9a4d', color2: '#e0491a',
-    blurb: 'Q magma ball · E eruption',
-    qd: 'magma', ed: 'eruption',
+    get name() { return TR('Lava Mushroom'); }, short: 'MAGMA', color: '#ff9a4d', color2: '#e0491a',
+    get blurb() { return TR('Q magma ball · E eruption'); },
+    get qd() { return TR('magma'); }, get ed() { return TR('eruption'); },
     cd: 0.4,
     q(p, doubled) {
       const f = p.facing;
@@ -111,9 +111,9 @@ const POWERS = {
   },
 
   earth: {
-    name: 'Earth Plant', short: 'EARTH', color: '#a9d86a', color2: '#6f9c39',
-    blurb: 'Q spike row · E spike nova',
-    qd: 'spikes', ed: 'nova',
+    get name() { return TR('Earth Plant'); }, short: 'EARTH', color: '#a9d86a', color2: '#6f9c39',
+    get blurb() { return TR('Q spike row · E spike nova'); },
+    get qd() { return TR('spikes'); }, get ed() { return TR('nova'); },
     cd: 0.55,
     q(p, doubled) {
       const f = p.facing;
@@ -147,14 +147,14 @@ const POWERS = {
           (Math.random() - .5) * 90, -Math.random() * 260, '#8f6a3f', 0.7);
       G.cam.shake = 9;
       SFX.rumble();
-      if (n) G.pops.push({ x: p.cx, y: p.y - 10, t: 1, text: n + ' down', color: '#a9d86a' });
+      if (n) G.pops.push({ x: p.cx, y: p.y - 10, t: 1, text: TRF('mobsDown', n), color: '#a9d86a' });
     },
   },
 
   water: {
-    name: 'Water Mushroom', short: 'WATER', color: '#8fd3ff', color2: '#3f8fd6',
-    blurb: 'Q blinding squirt · E freeze',
-    qd: 'blind', ed: 'freeze',
+    get name() { return TR('Water Mushroom'); }, short: 'WATER', color: '#8fd3ff', color2: '#3f8fd6',
+    get blurb() { return TR('Q blinding squirt · E freeze'); },
+    get qd() { return TR('blind'); }, get ed() { return TR('freeze'); },
     cd: 0.35,
     q(p, doubled) {
       const f = p.facing;

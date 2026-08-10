@@ -57,11 +57,13 @@ function update(dt) {
   G.time += dt;
   if (G.flash > 0) G.flash -= dt;
   if (G.banner) { G.banner.t -= dt; if (G.banner.t <= 0) G.banner = null; }
+  if (IN.lang()) cycleLang();
   updateParticles(dt);
 
   switch (G.state) {
     case 'title':
       checkCheatCode();
+      if (G.langPickT > 0) G.langPickT = Math.max(0, G.langPickT - dt);
       if (IN.help()) { openHelp(); break; }
       if (Keys.justPressed('Space', 'Enter')) { startRun(); }
       else {
@@ -174,10 +176,10 @@ function render() {
   if (G.state === 'paused') {
     hud.fillStyle = 'rgba(6,8,16,.72)';
     hud.fillRect(0, 0, VIEW_W, VIEW_H);
-    hudText('PAUSED', VIEW_W / 2, VIEW_H / 2 - 10, 20, '#dfe8ff', 'center');
-    hudText('P or ESC to keep going', VIEW_W / 2, VIEW_H / 2 + 8, 9, 'rgba(200,215,255,.65)', 'center');
+    hudText(TR('PAUSED'), VIEW_W / 2, VIEW_H / 2 - 10, 20, '#dfe8ff', 'center');
+    hudText(TR('P or ESC to keep going'), VIEW_W / 2, VIEW_H / 2 + 8, 9, 'rgba(200,215,255,.65)', 'center');
     if (G.immortal)
-      hudText('\u221e  explorer mode is on', VIEW_W / 2, VIEW_H / 2 + 26, 8.5, '#9ff0c0', 'center');
+      hudText(TR('\u221e  explorer mode is on'), VIEW_W / 2, VIEW_H / 2 + 26, 8.5, '#9ff0c0', 'center');
   }
 }
 
@@ -204,6 +206,7 @@ function boot() {
   G.state = 'title';
   G.banner = null;
   const tap = document.getElementById('tapstart');
+  tap.textContent = TR('Click to play');
   const kick = () => { Audio2.unlock(); tap.style.display = 'none'; };
   addEventListener('pointerdown', kick);
   addEventListener('keydown', kick, { once: true });
