@@ -40,7 +40,7 @@ class World {
     this.cfg = cfg;
     this.index = index;
     this.w = cfg.w; this.h = cfg.h;
-    this.name = cfg.name; this.biome = cfg.biome;
+    this.biome = cfg.biome;
     this.tiles = new Uint8Array(this.w * this.h);
     this.surface = new Int16Array(this.w).fill(cfg.h - 12);
     this.spawn = { x: 6 * TILE, y: 10 * TILE };
@@ -52,6 +52,9 @@ class World {
     this.hints = [];
     this.decor = [];
   }
+  /* a live lookup rather than a copied field, so the HUD relabels itself the
+     instant the language changes instead of waiting for the next level build */
+  get name() { return TR(this.cfg.name); }
   idx(x, y) { return y * this.w + x; }
   get(x, y) {
     if (x < 0 || x >= this.w) return T.BEDROCK;

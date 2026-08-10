@@ -474,8 +474,10 @@ function drawHintsHud(W, camX, camY) {
     const a = dx <= 100 ? 1 : clamp(1 - (dx - 100) / 70, 0, 1);
     if (a <= 0.03) continue;
 
+    // translated live, not baked in at level-build time, so L relabels signs too
+    const text = TR(h.text);
     hud.font = font;
-    const tw = hud.measureText(h.text).width;
+    const tw = hud.measureText(text).width;
     const bw = Math.round(tw + 16), bh = Math.round(size + 11);
     const bx = Math.round(sx - bw / 2), by = Math.round(sy - bh);
 
@@ -488,9 +490,9 @@ function drawHintsHud(W, camX, camY) {
     const base = inkBaseline(by + bh / 2, font, 'MHXWgy');
     hud.font = font; hud.textAlign = 'center';
     hud.fillStyle = 'rgba(0,0,0,.8)';              // shadow keeps it legible on bright sky
-    hud.fillText(h.text, sx + 1, base + 1);
+    hud.fillText(text, sx + 1, base + 1);
     hud.fillStyle = '#ffeec0';
-    hud.fillText(h.text, sx, base);
+    hud.fillText(text, sx, base);
     hud.globalAlpha = 1;
   }
 }
@@ -687,9 +689,9 @@ function drawHUD() {
   hud.fillStyle = '#bdffdc'; hud.fillRect(9, 23, 2, 3);
   hudText(String(G.gems), 18, 30, 9, '#9ff0c0');
   const nextSq = (Math.floor(Math.sqrt(G.gems)) + 1) ** 2;
-  hudText('next ² at ' + nextSq, 40, 30, 7.5, 'rgba(159,240,192,.6)');
+  hudText(TRF('nextSquareAt', nextSq), 40, 30, 7.5, 'rgba(159,240,192,.6)');
   hudText(String(G.score).padStart(6, '0'), VIEW_W - 8, 17, 10, '#ffe9a8', 'right');
-  hudText('LEVEL ' + (G.level + 1) + '  ·  ' + G.world.name.toUpperCase(), VIEW_W - 8, 29, 7.5, 'rgba(223,232,255,.55)', 'right');
+  hudText(TRF('levelLabel', G.level + 1, G.world.name.toUpperCase()), VIEW_W - 8, 29, 7.5, 'rgba(223,232,255,.55)', 'right');
 
   /* inventory — slot 0 is Jay's own hands, then the five carry slots */
   const slotW = 22, gap = 3, fistGap = 9;
@@ -733,8 +735,8 @@ function drawHUD() {
   }
 
   /* control legend */
-  const legend = IN.doubler() ? 'TAB + Q  =  DOUBLE POWER'
-    : (fistSel ? 'Q punch blocks    E uppercut    SHIFT / 1-5 to hold a plant'
+  const legend = IN.doubler() ? TR('TAB + Q  =  DOUBLE POWER')
+    : TR(fistSel ? 'Q punch blocks    E uppercut    SHIFT / 1-5 to hold a plant'
                : 'Q power    E alt    TAB+Q ²    SHIFT cycles    0 fists');
   hudText(legend, VIEW_W / 2, VIEW_H - 4, 7,
     IN.doubler() ? '#ffe98f' : 'rgba(200,215,255,.45)', 'center');
@@ -750,16 +752,20 @@ function drawHUD() {
   if (G.state === 'glitch') drawGlitchScreen();
   if (G.state === 'dead') {
     hud.fillStyle = 'rgba(6,8,16,.55)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-    hudText('OOF', VIEW_W / 2, VIEW_H / 2 - 4, 22, '#ff8a9a', 'center');
-    hudText(G.lives >= 0 ? G.lives + ' lives left' : 'no lives left', VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
+    hudText(TR('OOF'), VIEW_W / 2, VIEW_H / 2 - 4, 22, '#ff8a9a', 'center');
+    hudText(TRF('livesLeft', G.lives), VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
   }
   if (G.state === 'levelclear') {
     hud.fillStyle = 'rgba(6,8,16,.5)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-    hudText('LEVEL CLEAR', VIEW_W / 2, VIEW_H / 2 - 6, 20, '#ffe9a8', 'center');
-    hudText(G.world.name + '   ·   ' + G.gems + ' gems', VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
+    hudText(TR('LEVEL CLEAR'), VIEW_W / 2, VIEW_H / 2 - 6, 20, '#ffe9a8', 'center');
+    hudText(G.world.name + '   ·   ' + TRF('gemsCount', G.gems), VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
   }
   if (G.state === 'gameover') drawGameOver();
   if (G.state === 'win') drawWin();
+
+  /* persistent top-right language badge — earned the first time L is pressed
+     in-game (or restored from a previous session), stays up from then on */
+  if (G.langShown) hudMono(LANG_CODE[G.lang], VIEW_W - 8, 8, 6.5, 'rgba(200,215,255,.5)', 'right');
 
   /* banner — drawn dead last so it always reads on top of the rune box,
      the glitch screen, or any other overlay live at the moment. */
@@ -805,6 +811,8 @@ const HUD_HOME = {
   hearts: () => ({ x: 8 + (G.player.maxHp * 11) / 2, y: 13 }),
   // the purple ability list, bottom left — newest entry sits `row` up from the base
   ability: (row) => ({ x: 32, y: VIEW_H - 42 - 9 * row }),
+  // the persistent 2-letter language code, top right
+  lang: () => ({ x: VIEW_W - 12, y: 8 }),
 };
 
 function drawRuneModal() {
@@ -812,14 +820,14 @@ function drawRuneModal() {
   hud.fillStyle = 'rgba(6,8,18,.72)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
   const w = 210, h = 96, x = (VIEW_W - w) / 2, y = (VIEW_H - h) / 2;
   panel(x, y, w, h, 'rgba(22,16,44,.96)', '#a98cff');
-  hudText('MATH RUNE', VIEW_W / 2, y + 16, 9, '#c7a8ff', 'center');
+  hudText(TR('MATH RUNE'), VIEW_W / 2, y + 16, 9, '#c7a8ff', 'center');
   hudText(R.q + ' =', VIEW_W / 2, y + 44, 22, '#ffffff', 'center');
 
   /* Answer field. The caret is drawn as its own bar to the right of the digits —
      never concatenated into the string, or every blink would shove the centred
      number sideways. */
   const bw = 74, bx = (VIEW_W - bw) / 2, by = y + 52;
-  panel(bx, by, bw, 20, 'rgba(10,8,22,.9)', R.done ? (R.msg === 'CORRECT' ? '#7dffb0' : '#ff8a9a') : '#c7a8ff');
+  panel(bx, by, bw, 20, 'rgba(10,8,22,.9)', R.done ? (R.msgKind === 'correct' ? '#7dffb0' : '#ff8a9a') : '#c7a8ff');
 
   const digits = R.input;
   hud.font = 'bold 14px "Trebuchet MS", system-ui, sans-serif';
@@ -836,8 +844,11 @@ function drawRuneModal() {
   }
   // no underline here — the field already has its own outline
 
-  if (R.done) hudText(R.msg, VIEW_W / 2, y + h - 8, 8.5, R.msg === 'CORRECT' ? '#7dffb0' : '#ff8a9a', 'center');
-  else hudText('type the number · ENTER to answer · ESC to walk away', VIEW_W / 2, y + h - 8, 7, 'rgba(223,232,255,.55)', 'center');
+  if (R.done) {
+    const msg = R.msgKind === 'correct' ? TR('CORRECT') : TRF('notQuite', R.ans);
+    hudText(msg, VIEW_W / 2, y + h - 8, 8.5, R.msgKind === 'correct' ? '#7dffb0' : '#ff8a9a', 'center');
+  }
+  else hudText(TR('type the number · ENTER to answer · ESC to walk away'), VIEW_W / 2, y + h - 8, 7, 'rgba(223,232,255,.55)', 'center');
 }
 
 function drawGlitchScreen() {
@@ -857,22 +868,22 @@ function drawGlitchScreen() {
   }
 
   if (gl.boot > 0) {
-    hudMono('SEGMENTATION FAULT AT 0x5Q4RE', VIEW_W / 2, VIEW_H / 2 - 8, 11, '#7dffb0', 'center');
+    hudMono(TR('SEGMENTATION FAULT AT 0x5Q4RE'), VIEW_W / 2, VIEW_H / 2 - 8, 11, '#7dffb0', 'center');
     const via = (POWERS[gl.via] ? POWERS[gl.via].short : 'MAGMA').toLowerCase();
-    hudMono(via + ' vector escaped world bounds', VIEW_W / 2, VIEW_H / 2 + 6, 8, 'rgba(125,255,176,.6)', 'center');
+    hudMono(via + ' ' + TR('vector escaped world bounds'), VIEW_W / 2, VIEW_H / 2 + 6, 8, 'rgba(125,255,176,.6)', 'center');
     return;
   }
 
-  hudMono('J².SYS  //  DEVELOPER SHELL', 14, 22, 10, '#7dffb0');
-  hudMono('you were not supposed to find this', 14, 32, 7.5, 'rgba(125,255,176,.45)');
+  hudMono(TR('J².SYS  //  DEVELOPER SHELL'), 14, 22, 10, '#7dffb0');
+  hudMono(TR('you were not supposed to find this'), 14, 32, 7.5, 'rgba(125,255,176,.45)');
   hud.strokeStyle = 'rgba(125,255,176,.35)';
   hud.beginPath(); hud.moveTo(14, 38); hud.lineTo(VIEW_W - 14, 38); hud.stroke();
 
   const items = glitchItems();
-  const crumb = ['ROOT'].concat(G.glitch.path.map((i, n) => {
+  const crumb = [TR('ROOT')].concat(G.glitch.path.map((i, n) => {
     let list = GLITCH_ROOT;
     for (let k = 0; k < n; k++) list = list[G.glitch.path[k]].sub;
-    return list[i].label;
+    return TR(list[i].label);
   })).join(' / ');
   hudMono(crumb, 14, 48, 7.5, 'rgba(125,255,176,.55)');
 
@@ -883,14 +894,14 @@ function drawGlitchScreen() {
       hud.fillStyle = 'rgba(125,255,176,.16)';
       hud.fillRect(12, y - 9, VIEW_W - 24, 12);
     }
-    hudMono((sel ? '> ' : '  ') + it.label + (it.sub ? '  ▸' : ''), 18, y, 9.5,
+    hudMono((sel ? '> ' : '  ') + TR(it.label) + (it.sub ? '  ▸' : ''), 18, y, 9.5,
       sel ? '#c9ffe2' : 'rgba(125,255,176,.72)');
   });
 
   gl.log.forEach((line, i) => {
     hudMono(line, 14, VIEW_H - 30 + i * 9 - gl.log.length * 9 + 30, 7.5, 'rgba(125,255,176,.5)');
   });
-  hudMono('↑↓ select   ENTER apply   ESC back / resume', VIEW_W / 2, VIEW_H - 8, 7.5, 'rgba(125,255,176,.55)', 'center');
+  hudMono(TR('↑↓ select   ENTER apply   ESC back / resume'), VIEW_W / 2, VIEW_H - 8, 7.5, 'rgba(125,255,176,.55)', 'center');
 }
 
 /* ------------------------------- help ------------------------------------ */
@@ -938,8 +949,8 @@ function drawHelp() {
   const x = 14, y = 10, w = VIEW_W - 28, h = VIEW_H - 20;
   panel(x, y, w, h, 'rgba(14,18,36,.96)', 'rgba(255,233,168,.45)');
 
-  hudText('HOW TO PLAY', VIEW_W / 2, y + 16, 12, '#ffe9a8', 'center');
-  hudText('Jay Squared  ·  J²  ·  and some things are not on this list',
+  hudText(TR('HOW TO PLAY'), VIEW_W / 2, y + 16, 12, '#ffe9a8', 'center');
+  hudText(TR('Jay Squared  ·  J²  ·  and some things are not on this list'),
     VIEW_W / 2, y + 26, 7.5, 'rgba(200,215,255,.55)', 'center', 'normal');
   hud.fillStyle = 'rgba(255,233,168,.22)';
   hud.fillRect(x + 18, y + 31, w - 36, 1);
@@ -958,7 +969,7 @@ function drawHelp() {
       if (row.h) {
         const hb = inkBaseline(ry, headFont, 'MHXW');
         hud.font = headFont; hud.textAlign = 'left'; hud.fillStyle = '#9ff0c0';
-        hud.fillText(row.h, cx, hb);
+        hud.fillText(TR(row.h), cx, hb);
         hud.fillStyle = 'rgba(159,240,192,.25)';
         hud.fillRect(cx, Math.round(ry + 5), w / 2 - 40, 1);
         ry += rowH + 2;
@@ -975,7 +986,7 @@ function drawHelp() {
       const db = inkBaseline(ry, descFont, 'MHXWgy');
       hud.font = descFont; hud.textAlign = 'left';
       hud.fillStyle = 'rgba(223,232,255,.88)';
-      hud.fillText(row.d, cx + keyW, db);
+      hud.fillText(TR(row.d), cx + keyW, db);
       G.helpRows.push({
         cx, cy: ry, keyX: cx, descX: cx + keyW, hasKey: !!row.k, text: row.d,
         capCentre: capGeom ? capGeom.centre : null,
@@ -991,7 +1002,7 @@ function drawHelp() {
   const sy = y + h - 56;
   hud.fillStyle = 'rgba(255,233,168,.16)';
   hud.fillRect(x + 18, sy, w - 36, 1);
-  hudText('THE FIVE PLANTS  —  one hides in each biome', x + 16, sy + 11, 7.5, '#9ff0c0', 'left');
+  hudText(TR('THE FIVE PLANTS  —  one hides in each biome'), x + 16, sy + 11, 7.5, '#9ff0c0', 'left');
   const cellW = (w - 26) / 5;
   POWER_ORDER.forEach((kind, i) => {
     const cx = x + 13 + i * cellW;
@@ -1004,8 +1015,8 @@ function drawHelp() {
     hudText('Q ' + d.qd + '  ·  E ' + d.ed, cx, sy + 36, 6.5, 'rgba(223,232,255,.66)', 'left', 'normal');
   });
 
-  hudText(G.helpFrom === 'title' ? '? or ESC to go back   ·   SPACE to play'
-                                : '? or ESC to get back to the game',
+  hudText(TR(G.helpFrom === 'title' ? '? or ESC to go back   ·   SPACE to play'
+                                : '? or ESC to get back to the game'),
     VIEW_W / 2, y + h - 6, 7.5, 'rgba(255,233,168,.75)', 'center');
 }
 
@@ -1027,39 +1038,46 @@ function drawTitle() {
   hud.fillStyle = '#8fd3ff'; hud.fillText('2', 22, -18);
   hud.restore();
 
-  hudText('JAY  SQUARED', VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
-  hudText('a blocky adventure in five biomes', VIEW_W / 2, 126, 8.5, 'rgba(200,215,255,.6)', 'center');
+  hudText(TR('JAY  SQUARED'), VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
+  hudText(TR('a blocky adventure in five biomes'), VIEW_W / 2, 126, 8.5, 'rgba(200,215,255,.6)', 'center');
 
   const pulse = 0.55 + Math.sin(t * 4) * 0.35;
   hud.globalAlpha = pulse;
-  hudText('PRESS SPACE TO PLAY', VIEW_W / 2, 162, 12, '#ffe9a8', 'center');
+  hudText(TR('PRESS SPACE TO PLAY'), VIEW_W / 2, 162, 12, '#ffe9a8', 'center');
   hud.globalAlpha = 1;
-  hudText('PRESS  ?  FOR HELP', VIEW_W / 2, 184, 10, 'rgba(159,240,192,.85)', 'center');
-  hudText('the controls live in there, and you can open it mid-game',
+  hudText(TR('PRESS  ?  FOR HELP'), VIEW_W / 2, 184, 10, 'rgba(159,240,192,.85)', 'center');
+  hudText(TR('the controls live in there, and you can open it mid-game'),
     VIEW_W / 2, 198, 7.5, 'rgba(200,215,255,.5)', 'center', 'normal');
 
-  if (G.immortal)
-    hudText('∞   EXPLORER MODE IS ON   ∞', VIEW_W / 2, 216, 9, '#9ff0c0', 'center');
+  /* auto-cycling language hint; a fresh L press interrupts it for a beat to
+     confirm the choice, in the language just picked, before resuming */
+  const langLine = G.langPickT > 0
+    ? LANG_SELECTED[G.lang](LANG_NAME[G.lang])
+    : LANG_HINT[LANGS[Math.floor(G.time / 2) % LANGS.length]];
+  hudText(langLine, VIEW_W / 2, 210, 7, 'rgba(200,215,255,.5)', 'center', 'normal');
 
-  hudText('Jay is almost 8. He is very good at maths. That turns out to matter.',
+  if (G.immortal)
+    hudText(TR('∞   EXPLORER MODE IS ON   ∞'), VIEW_W / 2, 226, 9, '#9ff0c0', 'center');
+
+  hudText(TR('Jay is almost 8. He is very good at maths. That turns out to matter.'),
     VIEW_W / 2, VIEW_H - 14, 8, 'rgba(159,240,192,.75)', 'center', 'normal');
 }
 
 function drawGameOver() {
   hud.fillStyle = 'rgba(6,8,16,.8)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-  hudText('GAME OVER', VIEW_W / 2, VIEW_H / 2 - 14, 26, '#ff8a9a', 'center');
-  hudText(G.gems + ' gems   ·   ' + G.score + ' points', VIEW_W / 2, VIEW_H / 2 + 6, 10, '#dfe8ff', 'center');
+  hudText(TR('GAME OVER'), VIEW_W / 2, VIEW_H / 2 - 14, 26, '#ff8a9a', 'center');
+  hudText(TRF('gameOverStats', G.gems, G.score), VIEW_W / 2, VIEW_H / 2 + 6, 10, '#dfe8ff', 'center');
   const r = Math.floor(Math.sqrt(G.gems));
-  hudText('that is ' + r + '² and ' + (G.gems - r * r) + ' left over', VIEW_W / 2, VIEW_H / 2 + 20, 8.5, 'rgba(159,240,192,.8)', 'center');
-  hudText('press SPACE to try again', VIEW_W / 2, VIEW_H / 2 + 42, 9, 'rgba(223,232,255,.7)', 'center');
+  hudText(TRF('leftOver', r, G.gems - r * r), VIEW_W / 2, VIEW_H / 2 + 20, 8.5, 'rgba(159,240,192,.8)', 'center');
+  hudText(TR('press SPACE to try again'), VIEW_W / 2, VIEW_H / 2 + 42, 9, 'rgba(223,232,255,.7)', 'center');
 }
 
 function drawWin() {
   hud.fillStyle = 'rgba(6,10,26,.82)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
-  hudText('THE CASTLE IS YOURS', VIEW_W / 2, 76, 20, '#ffe9a8', 'center');
-  hudText('Jay collected ' + G.gems + ' gems and ' + G.score + ' points', VIEW_W / 2, 100, 10, '#dfe8ff', 'center');
+  hudText(TR('THE CASTLE IS YOURS'), VIEW_W / 2, 76, 20, '#ffe9a8', 'center');
+  hudText(TRF('winStats', G.gems, G.score), VIEW_W / 2, 100, 10, '#dfe8ff', 'center');
   const r = Math.floor(Math.sqrt(G.gems));
-  hudText('√' + G.gems + ' ≈ ' + r + '  ·  abilities found: ' + G.abilities.size + '/5',
+  hudText(TRF('winAbilities', G.gems, r, G.abilities.size),
     VIEW_W / 2, 116, 9, 'rgba(159,240,192,.85)', 'center');
-  hudText('press SPACE to play again', VIEW_W / 2, 156, 9.5, 'rgba(223,232,255,.7)', 'center');
+  hudText(TR('press SPACE to play again'), VIEW_W / 2, 156, 9.5, 'rgba(223,232,255,.7)', 'center');
 }

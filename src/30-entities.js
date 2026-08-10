@@ -2,6 +2,7 @@
    ENTITIES — Jay, mobs, pickups, projectiles, particles, tile collision
    ========================================================================== */
 
+const initialLang = loadLang();
 const G = {
   world: null, player: null,
   /* gemEnts = the pickups lying in the level.  G.gems = how many Jay has counted. */
@@ -20,6 +21,9 @@ const G = {
   runsCompleted: 0,
   immortal: false,   // the 144 code. Deliberately NOT reset by startRun().
   codeBuf: '',
+  lang: initialLang,           // en | es | de — cycled with L, persisted to localStorage
+  langPickT: 0,                // title screen: seconds left showing "you selected X"
+  langShown: initialLang !== 'en',  // has the corner language badge earned its place yet?
 };
 
 /* `to` is an optional {x, y} in view space. Given one, the banner does not fade
@@ -165,13 +169,13 @@ class Player extends Entity {
     SFX.menu();
     if (slot === -1) {
       this.sel = -1;
-      say('bare hands', 'Q punches blocks apart · E uppercut', '#f2c79c', 1.6);
+      say(TR('bare hands'), TR('Q punches blocks apart · E uppercut'), '#f2c79c', 1.6);
       return;
     }
     const it = this.inv[slot];
     if (!it) {
       this.sel = -1;
-      say('slot ' + (slot + 1) + ' is empty', 'bare hands it is', '#8d9bb5', 1.4);
+      say(TRF('slotEmpty', slot + 1), TR('bare hands it is'), '#8d9bb5', 1.4);
       return;
     }
     this.sel = slot;
@@ -185,7 +189,7 @@ class Player extends Entity {
     for (let i = 0; i < 5; i++) if (this.inv[i]) ring.push(i);
     if (ring.length === 1) {
       this.sel = -1;
-      say('bare hands', 'nothing to cycle to yet', '#8d9bb5', 1.2);
+      say(TR('bare hands'), TR('nothing to cycle to yet'), '#8d9bb5', 1.2);
       SFX.menu();
       return;
     }
@@ -437,15 +441,15 @@ class Player extends Entity {
 
   addItem(kind) {
     if (this.inv.includes(kind)) {
-      say(POWERS[kind].name + ' recharged', POWERS[kind].blurb, POWERS[kind].color, 2);
+      say(TRF('recharged', POWERS[kind].name), POWERS[kind].blurb, POWERS[kind].color, 2);
       return true;
     }
     const slot = this.inv.indexOf(null);
-    if (slot === -1) { say('inventory full', 'five is the limit — press 1-5', '#ff9d6b', 2); return false; }
+    if (slot === -1) { say(TR('inventory full'), TR('five is the limit — press 1-5'), '#ff9d6b', 2); return false; }
     this.inv[slot] = kind;
     this.sel = slot;
     SFX.pickup();
-    say(POWERS[kind].name + '  →  slot ' + (slot + 1), POWERS[kind].blurb, POWERS[kind].color, 3);
+    say(TRF('toSlot', POWERS[kind].name, slot + 1), POWERS[kind].blurb, POWERS[kind].color, 3);
     return true;
   }
 }
@@ -708,11 +712,11 @@ class Shot extends Entity {
         m.burn = 3; m.damage(2); break;
       case 'water':
         m.blind = 4; m.damage(0.5);
-        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: 'blind!', color: '#8fd3ff' });
+        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: TR('blind!'), color: '#8fd3ff' });
         break;
       case 'ice':
         m.frozen = 4.5; m.vx = 0;
-        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: 'frozen!', color: '#bff0ff' });
+        G.pops.push({ x: m.cx, y: m.y - 6, t: 0.8, text: TR('frozen!'), color: '#bff0ff' });
         break;
       case 'orb':
         break;
