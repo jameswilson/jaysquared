@@ -5,16 +5,26 @@ blocks, where being good at maths is the actual superpower.
 
 Jay is almost 8. He is very good at maths. That turns out to matter.
 
-The whole game is **one HTML file with no dependencies** — open
-[`jay-squared.html`](jay-squared.html) in a browser and it runs. Nothing to
-install, nothing to serve.
+[![Title screen](docs/title.en.png)](https://www.elementalidad.com/jaysquared/jay-squared.html)
 
-![Title screen](docs/title.en.png)
+<div align="center">
+
+[![▶ Play Online Now](https://img.shields.io/badge/▶_Play_Online_Now-4CAF50?style=for-the-badge)](https://www.elementalidad.com/jaysquared/jay-squared.html)
+
+[⬇ Download Jay Squared](https://github.com/jameswilson/jaysquared/releases/latest/download/jay-squared.html)
+
+</div>
 
 ## Playing it
 
-Download `jay-squared.html` and double-click it, or clone this repo and open the
-file. It works offline; there is no build step required to play.
+The whole game is **one HTML file with no dependencies** — open
+[`jay-squared.html`](jay-squared.html) in a browser and it runs. Nothing to
+install, nothing to serve.  To play you have the following options:
+
+- Play online at [elementalidad.com/jaysquared](https://www.elementalidad.com/jaysquared/),
+- or download [`jay-squared.html`](https://github.com/jameswilson/jaysquared/releases/latest/download/jay-squared.html)
+  and double-click it to load it locally in your browser,
+- or clone this repo and open the file. It works offline; there is no build step required to play.
 
 ### Controls
 
