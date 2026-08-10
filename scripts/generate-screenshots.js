@@ -42,6 +42,7 @@ async function shootGameplay(page, lang) {
     G.player.x = h.x - 5; G.player.y = h.y + 40;
     G.cam.x = h.x - 240; G.cam.y = h.y - 90;
     G.gems = 50; G.lives = 3; G.player.hp = G.player.maxHp;
+    G.banner = null;
   }, lang);
   await page.waitForTimeout(500);
   await page.screenshot({ path: path.join(DOCS, `gameplay.${lang}.png`) });
@@ -60,6 +61,7 @@ async function shootRune(page, lang) {
   await page.waitForTimeout(500);
   const state = await page.evaluate(() => window.J2.G.state);
   if (state !== 'rune') throw new Error(`expected rune state, got "${state}"`);
+  await page.evaluate(() => { window.J2.G.banner = null; });
   await page.screenshot({ path: path.join(DOCS, `rune.${lang}.png`) });
 }
 
@@ -77,6 +79,7 @@ async function shootGlitch(page, lang) {
   await page.waitForTimeout(1500);
   const state = await page.evaluate(() => window.J2.G.state);
   if (state !== 'glitch') throw new Error(`expected glitch state, got "${state}"`);
+  await page.evaluate(() => { window.J2.G.banner = null; });
   await page.screenshot({ path: path.join(DOCS, `glitch.${lang}.png`) });
 }
 
@@ -107,6 +110,8 @@ const SCENES = [
 
   await page.goto(GAME);
   await page.waitForTimeout(500);
+  // keep the "LEVEL N · WORLD NAME" HUD popup out of the gameplay/rune/glitch shots
+  await page.evaluate(() => { window.J2.G.hideLevelLabel = true; });
 
   for (const lang of LANGS) {
     for (const [name, shoot] of SCENES) {
