@@ -1061,7 +1061,7 @@ function drawTitle() {
   }
   hud.restore();
 
-  hudText(TR('JAY  SQUARED'), VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
+  hudText(TR('JAY SQUARED'), VIEW_W / 2, 112, 15, '#dfe8ff', 'center');
   hudText(TR('a blocky adventure in five biomes'), VIEW_W / 2, 126, 8.5, 'rgba(200,215,255,.6)', 'center');
 
   const pulse = 0.55 + Math.sin(t * 4) * 0.35;

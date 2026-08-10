@@ -178,7 +178,7 @@ const STRINGS = {
   es: {
     'Click to play': 'Toca para jugar',
 
-    'JAY  SQUARED': 'JAY  AL CUADRADO',
+    'JAY SQUARED': 'JAY AL CUADRADO',
     'a blocky adventure in five biomes': 'una aventura de bloques en cinco biomas',
     'PRESS SPACE TO PLAY': 'PULSA ESPACIO PARA JUGAR',
     'PRESS  ?  FOR HELP': 'PULSA  ?  PARA AYUDA',
@@ -317,7 +317,7 @@ const STRINGS = {
   de: {
     'Click to play': 'Zum Spielen klicken',
 
-    'JAY  SQUARED': 'JAY  ZUM QUADRAT',
+    'JAY SQUARED': 'JAY ZUM QUADRAT',
     'a blocky adventure in five biomes': 'ein Klötzchen-Abenteuer in fünf Biomen',
     'PRESS SPACE TO PLAY': 'LEERTASTE ZUM SPIELEN',
     'PRESS  ?  FOR HELP': 'DRÜCK  ?  FÜR HILFE',
