@@ -6,7 +6,7 @@
 const POWERS = {
   wind: {
     get name() { return TR('Wind Plant'); }, short: 'WIND', color: '#bfe6ff', color2: '#7fc4ee',
-    get blurb() { return TR('Q gust · E twin orbs'); },
+    get blurb() { return TR('Q gust • E twin orbs'); },
     get qd() { return TR('gust'); }, get ed() { return TR('twin orbs'); },
     cd: 0.42,
     q(p, doubled) {
@@ -36,7 +36,7 @@ const POWERS = {
 
   electric: {
     get name() { return TR('Electric Plant'); }, short: 'ZAP', color: '#ffe680', color2: '#ffbe2e',
-    get blurb() { return TR('Q zap ray · E blast off'); },
+    get blurb() { return TR('Q zap ray • E blast off'); },
     get qd() { return TR('zap'); }, get ed() { return TR('blast off'); },
     cd: 0.5,
     q(p, doubled) {
@@ -88,7 +88,7 @@ const POWERS = {
 
   lava: {
     get name() { return TR('Lava Mushroom'); }, short: 'MAGMA', color: '#ff9a4d', color2: '#e0491a',
-    get blurb() { return TR('Q magma ball · E eruption'); },
+    get blurb() { return TR('Q magma ball • E eruption'); },
     get qd() { return TR('magma'); }, get ed() { return TR('eruption'); },
     cd: 0.4,
     q(p, doubled) {
@@ -112,7 +112,7 @@ const POWERS = {
 
   earth: {
     get name() { return TR('Earth Plant'); }, short: 'EARTH', color: '#a9d86a', color2: '#6f9c39',
-    get blurb() { return TR('Q spike row · E spike nova'); },
+    get blurb() { return TR('Q spike row • E spike nova'); },
     get qd() { return TR('spikes'); }, get ed() { return TR('nova'); },
     cd: 0.55,
     q(p, doubled) {
@@ -153,7 +153,7 @@ const POWERS = {
 
   water: {
     get name() { return TR('Water Mushroom'); }, short: 'WATER', color: '#8fd3ff', color2: '#3f8fd6',
-    get blurb() { return TR('Q blinding squirt · E freeze'); },
+    get blurb() { return TR('Q blinding squirt • E freeze'); },
     get qd() { return TR('blind'); }, get ed() { return TR('freeze'); },
     cd: 0.35,
     q(p, doubled) {
@@ -179,7 +179,7 @@ const POWER_ORDER = ['earth', 'water', 'electric', 'lava', 'wind'];
    slot — either way Q punches blocks apart and E throws an uppercut. */
 const FIST = {
   name: 'Bare Hands', short: 'FIST', color: '#f2c79c', color2: '#d6a377',
-  blurb: 'Q punch · E uppercut',
+  blurb: 'Q punch • E uppercut',
   cd: 0.16,
   q(p, doubled) {
     p.punchT = 0.18;

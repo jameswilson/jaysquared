@@ -194,7 +194,7 @@ function toggleImmortal() {
   G.codeBuf = '';
   if (G.immortal) {
     Audio2.arp([392, 523, 659, 784, 1046, 1318], 0.06, 'triangle');
-    say(TR('EXPLORER MODE ON'), TR('144 = 12²  ·  Jay cannot die'), '#9ff0c0', 4.5);
+    say(TR('EXPLORER MODE ON'), TR('144 = 12²  •  Jay cannot die'), '#9ff0c0', 4.5);
   } else {
     Audio2.arp([784, 587, 392], 0.07, 'square');
     say(TR('explorer mode off'), TR('back to five lives'), '#ff9d6b', 3);

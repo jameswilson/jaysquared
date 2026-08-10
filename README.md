@@ -21,12 +21,12 @@ file. It works offline; there is no build step required to play.
 | Key | Does |
 | --- | --- |
 | `←` `→` | walk (`A` / `D` also work) |
-| `↑` | jump · climb a ladder, vine or tree trunk |
-| `↓` | crouch · climb down |
+| `↑` | jump • climb a ladder, vine or tree trunk |
+| `↓` | crouch • climb down |
 | `SPACE` | jump — press again in mid-air to go higher, up to five times |
 | `↓` + `SPACE` | drop through wooden planks |
-| `Q` | use power · with bare hands, hold to punch blocks apart |
-| `E` | second power · uppercut |
+| `Q` | use power • with bare hands, hold to punch blocks apart |
+| `E` | second power • uppercut |
 | `TAB` + `Q` | **squared** — the Q power, twice over |
 | `0` | bare hands |
 | `1`–`5` | choose an inventory slot (number pad works too) |

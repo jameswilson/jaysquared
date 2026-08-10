@@ -110,7 +110,7 @@ const SCENES = [
 
   await page.goto(GAME);
   await page.waitForTimeout(500);
-  // keep the "LEVEL N · WORLD NAME" HUD popup out of the gameplay/rune/glitch shots
+  // keep the "LEVEL N • WORLD NAME" HUD popup out of the gameplay/rune/glitch shots
   await page.evaluate(() => { window.J2.G.hideLevelLabel = true; });
 
   for (const lang of LANGS) {

@@ -765,7 +765,7 @@ function drawHUD() {
   if (G.state === 'levelclear') {
     hud.fillStyle = 'rgba(6,8,16,.5)'; hud.fillRect(0, 0, VIEW_W, VIEW_H);
     hudText(TR('LEVEL CLEAR'), VIEW_W / 2, VIEW_H / 2 - 6, 20, '#ffe9a8', 'center');
-    hudText(G.world.name + '   ·   ' + TRF('gemsCount', G.gems), VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
+    hudText(G.world.name + '   •   ' + TRF('gemsCount', G.gems), VIEW_W / 2, VIEW_H / 2 + 10, 9, '#dfe8ff', 'center');
   }
   if (G.state === 'gameover') drawGameOver();
   if (G.state === 'win') drawWin();
@@ -855,7 +855,7 @@ function drawRuneModal() {
     const msg = R.msgKind === 'correct' ? TR('CORRECT') : TRF('notQuite', R.ans);
     hudText(msg, VIEW_W / 2, y + h - 8, 8.5, R.msgKind === 'correct' ? '#7dffb0' : '#ff8a9a', 'center');
   }
-  else hudText(TR('type the number · ENTER to answer · ESC to walk away'), VIEW_W / 2, y + h - 8, 7, 'rgba(223,232,255,.55)', 'center');
+  else hudText(TR('type the number • ENTER to answer • ESC to walk away'), VIEW_W / 2, y + h - 8, 7, 'rgba(223,232,255,.55)', 'center');
 }
 
 function drawGlitchScreen() {
@@ -919,16 +919,16 @@ const HELP_COLUMNS = [
   [
     { h: 'MOVING' },
     { k: '← →', d: 'walk  (A and D work too)' },
-    { k: '↑', d: 'jump · climb a ladder, vine or trunk' },
-    { k: '↓', d: 'crouch · climb down' },
+    { k: '↑', d: 'jump • climb a ladder, vine or trunk' },
+    { k: '↓', d: 'crouch • climb down' },
     { k: 'SPACE', d: 'jump — press again in mid-air to' },
     { d: 'go higher, up to five times' },
     { k: '↓ + SPACE', d: 'drop through wooden planks' },
     {},
     { h: 'POWERS' },
-    { k: 'Q', d: 'use power · hold it to punch' },
+    { k: 'Q', d: 'use power • hold it to punch' },
     { d: 'blocks apart with bare hands' },
-    { k: 'E', d: 'second power · uppercut' },
+    { k: 'E', d: 'second power • uppercut' },
     { k: 'TAB + Q', d: 'squared — the Q power, twice' },
   ],
   [
@@ -958,7 +958,7 @@ function drawHelp() {
   panel(x, y, w, h, 'rgba(14,18,36,.96)', 'rgba(255,233,168,.45)');
 
   hudText(TR('HOW TO PLAY'), VIEW_W / 2, y + 16, 12, '#ffe9a8', 'center');
-  hudText(TR('Jay Squared  ·  J²  ·  and some things are not on this list'),
+  hudText(TR('Jay Squared  •  J²  •  and some things are not on this list'),
     VIEW_W / 2, y + 26, 7.5, 'rgba(200,215,255,.55)', 'center', 'normal');
   hud.fillStyle = 'rgba(255,233,168,.22)';
   hud.fillRect(x + 18, y + 31, w - 36, 1);
@@ -1020,10 +1020,10 @@ function drawHelp() {
     drawPowerIcon(hud, kind, 0, 0, 1.0, G.time + i);
     hud.restore();
     hudText(d.name.replace(' Plant', '').replace(' Mushroom', ''), cx + 15, sy + 25, 7.5, d.color, 'left');
-    hudText('Q ' + d.qd + '  ·  E ' + d.ed, cx, sy + 36, 6.5, 'rgba(223,232,255,.66)', 'left', 'normal');
+    hudText('Q ' + d.qd + '  •  E ' + d.ed, cx, sy + 36, 6.5, 'rgba(223,232,255,.66)', 'left', 'normal');
   });
 
-  hudText(TR(G.helpFrom === 'title' ? '? or ESC to go back   ·   SPACE to play'
+  hudText(TR(G.helpFrom === 'title' ? '? or ESC to go back   •   SPACE to play'
                                 : '? or ESC to get back to the game'),
     VIEW_W / 2, y + h - 6, 7.5, 'rgba(255,233,168,.75)', 'center');
 }

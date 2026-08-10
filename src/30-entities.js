@@ -169,7 +169,7 @@ class Player extends Entity {
     SFX.menu();
     if (slot === -1) {
       this.sel = -1;
-      say(TR('bare hands'), TR('Q punches blocks apart · E uppercut'), '#f2c79c', 1.6);
+      say(TR('bare hands'), TR('Q punches blocks apart • E uppercut'), '#f2c79c', 1.6);
       return;
     }
     const it = this.inv[slot];
