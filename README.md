@@ -56,12 +56,12 @@ The five abilities are Swift Feet, Gem Magnet, Extra Heart, Squared Mind (TAB
 doubles `E` as well as `Q`) and Feather Fall. They stack, and they show in the
 bottom-left corner as you collect them.
 
-## The five plants
+## The five plant powers
 
 Each one is a slot item with two distinct moves, plus a doubled variant on
 `TAB`+`Q`:
 
-| Plant | `Q` | `E` |
+| Plant | Power 1 (`Q`) | Power 2 (`E`) |
 | --- | --- | --- |
 | Wind Plant | gust | twin orbs |
 | Electric Plant | zap ray | blast off (fries anything under or beside you) |
@@ -71,7 +71,7 @@ Each one is a slot item with two distinct moves, plus a doubled variant on
 
 Bare hands are always available on `0`: `Q` punches blocks apart, `E` uppercuts.
 
-## Five biomes
+## Biomes and levels
 
 Emerald Plains → Dripstone Deep → Sunburn Dunes → Cinder Hollow → The Cobalt
 Castle. Each level is procedurally generated from a fixed seed, so the layouts
@@ -105,7 +105,7 @@ The single HTML file is **generated**, not edited directly. Source lives in
 | `10-core.js` | constants, input, tile table, audio |
 | `20-world.js` | level configs and the procedural generators |
 | `30-entities.js` | player, mobs, items, projectiles, collision |
-| `40-powers.js` | the five plants and bare hands |
+| `40-powers.js` | the five plant powers (plus bare hands) |
 | `50-math.js` | squares, runes, abilities, cheats, glitch menu |
 | `70-render.js` | both canvases, HUD, help screen, overlays |
 | `80-loop.js` | fixed-timestep loop and state machine |
@@ -124,7 +124,7 @@ pixelation.
 
 The suites drive a real headless Chromium through Playwright, pressing actual
 keys and asserting against internal state exposed on `window.J2`. Several of
-them measure rendered pixels rather than trusting a screenshot by eye — 
+them measure rendered pixels rather than trusting a screenshot by eye —
 `align.js` checks help-row text is centred to within a pixel, and `collapse.js`
 hooks the canvas transform to verify reward banners land on their HUD target.
 
