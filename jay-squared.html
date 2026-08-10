@@ -3844,7 +3844,9 @@ function drawHUD() {
   const nextSq = (Math.floor(Math.sqrt(G.gems)) + 1) ** 2;
   hudText(TRF('nextSquareAt', nextSq), 40, 30, 7.5, 'rgba(159,240,192,.6)');
   hudText(String(G.score).padStart(6, '0'), VIEW_W - 8, 17, 10, '#ffe9a8', 'right');
-  hudText(TRF('levelLabel', G.level + 1, G.world.name.toUpperCase()), VIEW_W - 8, 29, 7.5, 'rgba(223,232,255,.55)', 'right');
+  if (!G.hideLevelLabel) {
+    hudText(TRF('levelLabel', G.level + 1, G.world.name.toUpperCase()), VIEW_W - 8, 29, 7.5, 'rgba(223,232,255,.55)', 'right');
+  }
 
   /* inventory — slot 0 is Jay's own hands, then the five carry slots */
   const slotW = 22, gap = 3, fistGap = 9;

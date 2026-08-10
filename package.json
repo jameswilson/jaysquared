@@ -6,7 +6,8 @@
   "scripts": {
     "build": "./build.sh",
     "test": "node tests/run-all.js",
-    "test:one": "node"
+    "test:one": "node",
+    "screenshots": "node scripts/generate-screenshots.js"
   },
   "license": "MIT",
   "devDependencies": {

@@ -9,7 +9,7 @@ The whole game is **one HTML file with no dependencies** — open
 [`jay-squared.html`](jay-squared.html) in a browser and it runs. Nothing to
 install, nothing to serve.
 
-![Title screen](docs/title.png)
+![Title screen](docs/title.en.png)
 
 ## Playing it
 
@@ -34,7 +34,7 @@ file. It works offline; there is no build step required to play.
 | `P` or `ESC` | pause |
 | `?` or `H` | help, at any time |
 
-![Gameplay](docs/gameplay.png)
+![Gameplay](docs/gameplay.en.png)
 
 ## The maths
 
@@ -50,7 +50,7 @@ scaled to the level you are on — addition in the plains, multiplication and
 squares by the castle. Answer correctly for 1-UPs, gem showers and abilities.
 Get it wrong and the rune sulks for a few seconds before you can retry.
 
-![A rune](docs/rune.png)
+![A rune](docs/rune.en.png)
 
 The five abilities are Swift Feet, Gem Magnet, Extra Heart, Squared Mind (TAB
 doubles `E` as well as `Q`) and Feather Fall. They stack, and they show in the
@@ -92,7 +92,7 @@ Mild spoilers, in the order a player is likely to find them.
   edit gravity, spawn mobs, generate structures and duplicate your gems. Once
   per level.
 
-![The glitch menu](docs/glitch.png)
+![The glitch menu](docs/glitch.en.png)
 
 ## Working on it
 
