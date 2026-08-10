@@ -58,6 +58,7 @@ function update(dt) {
   if (G.flash > 0) G.flash -= dt;
   if (G.banner) { G.banner.t -= dt; if (G.banner.t <= 0) G.banner = null; }
   if (IN.lang()) cycleLang();
+  if (IN.fullscreen()) toggleFullscreen();
   updateParticles(dt);
 
   switch (G.state) {

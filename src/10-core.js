@@ -148,6 +148,7 @@ const IN = {
   cycle: () => Keys.shiftTap,
   help: () => Keys.justPressed('Slash', 'KeyH', 'NumpadDivide'),
   lang: () => Keys.justPressed('KeyL'),
+  fullscreen: () => Keys.justPressed('KeyF'),
 };
 
 /* --- internationalization -------------------------------------------------
@@ -225,6 +226,7 @@ const STRINGS = {
     'choose a slot (number pad too)': 'elige una ranura (num. también)',
     'cycle through what you hold': 'rota lo que llevas',
     'pause  (ESC also works)': 'pausar  (ESC también funciona)',
+    'fullscreen  (ESC also exits)': 'pantalla completa  (ESC también sale)',
     'this page, any time': 'esta página, cuando quieras',
     'gem totals that land on a perfect': 'totales de gemas que caen en un',
     'square — 4, 9, 16, 25 — pay out': 'cuadrado perfecto — 4, 9, 16, 25 — dan premio',
@@ -363,6 +365,7 @@ const STRINGS = {
     'choose a slot (number pad too)': 'Fach wählen (Zehnertast. auch)',
     'cycle through what you hold': 'durchwechseln, was du trägst',
     'pause  (ESC also works)': 'pausieren  (ESC geht auch)',
+    'fullscreen  (ESC also exits)': 'Vollbild  (ESC beendet es auch)',
     'this page, any time': 'diese Seite, jederzeit',
     'gem totals that land on a perfect': 'Edelstein-Summen, die auf einer',
     'square — 4, 9, 16, 25 — pay out': 'Quadratzahl landen — 4, 9, 16, 25 — zahlen aus',

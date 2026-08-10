@@ -29,6 +29,11 @@ function resizeStage() {
 }
 addEventListener('resize', resizeStage);
 
+function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen();
+}
+
 /* ------------------------------ world ----------------------------------- */
 function drawBackground(W, camX, camY) {
   const sky = W.cfg.sky;
@@ -932,6 +937,7 @@ const HELP_COLUMNS = [
     {},
     { h: 'THE GAME' },
     { k: 'P', d: 'pause  (ESC also works)' },
+    { k: 'F', d: 'fullscreen  (ESC also exits)' },
     { k: '?', d: 'this page, any time' },
     {},
     { h: "JAY'S MATHEMATICS" },
