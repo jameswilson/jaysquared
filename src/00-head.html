@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Jay Squared (J&sup2;)</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden;
+    background: #07080d;
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    color: #e8ecf5;
+    -webkit-font-smoothing: antialiased;
+  }
+  #wrap {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      radial-gradient(ellipse at 50% 0%, #16203a 0%, #0a0c14 55%, #05060a 100%);
+  }
+  #stage {
+    position: relative;
+    box-shadow: 0 0 0 2px #2a3550, 0 18px 60px rgba(0,0,0,.75), 0 0 90px rgba(90,140,255,.10);
+    background: #0a0c14;
+    overflow: hidden;
+  }
+  canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+  #game { image-rendering: pixelated; image-rendering: crisp-edges; }
+  #hud  { pointer-events: none; }
+  #scan {
+    position: absolute; inset: 0; pointer-events: none; z-index: 5;
+    background: repeating-linear-gradient(to bottom,
+      rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,.11) 3px, rgba(0,0,0,.11) 4px);
+    mix-blend-mode: multiply; opacity: .55;
+  }
+  #vig {
+    position: absolute; inset: 0; pointer-events: none; z-index: 6;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%);
+  }
+  #tapstart {
+    position: absolute; inset: 0; z-index: 20; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(4,6,12,.82); color: #cfe0ff;
+    font-size: 18px; letter-spacing: .18em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="game"></canvas>
+    <canvas id="hud"></canvas>
+    <div id="scan"></div>
+    <div id="vig"></div>
+    <div id="tapstart">Click to play</div>
+  </div>
+</div>
+<script>
+"use strict";

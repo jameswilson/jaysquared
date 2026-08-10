@@ -1,0 +1,4 @@
+node_modules/
+
+# screenshots the Playwright suites write while running
+tests/shots/
