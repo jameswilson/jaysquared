@@ -288,6 +288,7 @@ function cycleLang() {
   const i = LANGS.indexOf(G.lang);
   G.lang = LANGS[(i + 1) % LANGS.length];
   saveLang(G.lang);
+  syncLangURL(G.lang);
   SFX.menu();
   if (G.state === 'title') {
     G.langPickT = 2;
