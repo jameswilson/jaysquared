@@ -165,6 +165,10 @@ const LANG_STORAGE_KEY = 'jaySquaredLang';
 
 function loadLang() {
   try {
+    const q = new URLSearchParams(location.search).get('lang');
+    if (LANGS.includes(q)) { saveLang(q); return q; }
+  } catch (e) { /* malformed URL or no location.search */ }
+  try {
     const v = localStorage.getItem(LANG_STORAGE_KEY);
     if (LANGS.includes(v)) return v;
   } catch (e) { /* file:// or privacy mode can throw on localStorage access */ }
@@ -172,6 +176,15 @@ function loadLang() {
 }
 function saveLang(lang) {
   try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch (e) {}
+}
+/* keeps ?lang= in the address bar in sync with an in-game L press, so
+   reloading, bookmarking or sharing the URL preserves the chosen language */
+function syncLangURL(lang) {
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('lang', lang);
+    history.replaceState(null, '', url);
+  } catch (e) { /* file:// or sandboxed iframes can restrict history API */ }
 }
 
 const STRINGS = {
