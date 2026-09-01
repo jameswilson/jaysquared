@@ -326,6 +326,10 @@ const GLITCH_ROOT = [
     { label: 'STAIRWAY',   run: () => struct('stairs') },
     { label: 'GEM SHOWER', run: () => struct('gems') },
   ]},
+  { label: 'LEVEL.SKIP', sub: LEVELS.map((level, index) => ({
+    get label() { return TRF('levelLabel', index + 1, TR(level.name)); },
+    run: () => skipToLevel(index),
+  }))},
   { label: 'DUPLICATE', sub: [
     { label: 'ALL FIVE POWERS', run: () => { POWER_ORDER.forEach((k, i) => G.player.inv[i] = k); } },
     { label: 'DUPLICATE MOBS',  run: () => {
@@ -337,6 +341,13 @@ const GLITCH_ROOT = [
   ]},
   { label: '>> RESUME GAME', run: () => closeGlitch() },
 ];
+
+function skipToLevel(index) {
+  if (!Number.isInteger(index) || index < 0 || index >= LEVELS.length) return false;
+  buildLevel(index);
+  G.state = 'play';
+  return true;
+}
 
 function spawnNear(type, n, friendly) {
   const p = G.player, W = G.world;
