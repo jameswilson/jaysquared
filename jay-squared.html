@@ -371,7 +371,7 @@ const STRINGS = {
     'frozen!': '¡congelado!',
     'BLAST OFF': 'DESPEGUE',
 
-    'ROOT': 'RAÍZ',
+    'ROOT': 'RAÍZ', 'LEVEL.SKIP': 'NIVEL.SALTAR',
     'PHYSICS.HACK': 'FÍSICA.HACK', 'MOB.SPAWN': 'CRIATURA.GENERAR', 'STRUCTURE.GEN': 'ESTRUCTURA.GEN',
     'DUPLICATE': 'DUPLICAR', '>> RESUME GAME': '>> REANUDAR JUEGO',
     'LOW GRAVITY': 'GRAVEDAD BAJA', 'MOON JUMP': 'SALTO LUNAR', 'SUPER SPEED': 'SUPER VELOCIDAD',
@@ -510,7 +510,7 @@ const STRINGS = {
     'frozen!': 'eingefroren!',
     'BLAST OFF': 'ABHEBEN',
 
-    'ROOT': 'WURZEL',
+    'ROOT': 'WURZEL', 'LEVEL.SKIP': 'LEVEL.SPRINGEN',
     'PHYSICS.HACK': 'PHYSIK.HACK', 'MOB.SPAWN': 'KREATUR.SPAWN', 'STRUCTURE.GEN': 'STRUKTUR.GEN',
     'DUPLICATE': 'DUPLIZIEREN', '>> RESUME GAME': '>> SPIEL FORTSETZEN',
     'LOW GRAVITY': 'NIEDRIGE SCHWERKRAFT', 'MOON JUMP': 'MONDSPRUNG', 'SUPER SPEED': 'SUPERGESCHWINDIGKEIT',
@@ -3059,6 +3059,10 @@ const GLITCH_ROOT = [
     { label: 'STAIRWAY',   run: () => struct('stairs') },
     { label: 'GEM SHOWER', run: () => struct('gems') },
   ]},
+  { label: 'LEVEL.SKIP', sub: LEVELS.map((level, index) => ({
+    get label() { return TRF('levelLabel', index + 1, TR(level.name)); },
+    run: () => skipToLevel(index),
+  }))},
   { label: 'DUPLICATE', sub: [
     { label: 'ALL FIVE POWERS', run: () => { POWER_ORDER.forEach((k, i) => G.player.inv[i] = k); } },
     { label: 'DUPLICATE MOBS',  run: () => {
@@ -3070,6 +3074,13 @@ const GLITCH_ROOT = [
   ]},
   { label: '>> RESUME GAME', run: () => closeGlitch() },
 ];
+
+function skipToLevel(index) {
+  if (!Number.isInteger(index) || index < 0 || index >= LEVELS.length) return false;
+  buildLevel(index);
+  G.state = 'play';
+  return true;
+}
 
 function spawnNear(type, n, friendly) {
   const p = G.player, W = G.world;
