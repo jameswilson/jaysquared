@@ -894,8 +894,12 @@ function drawGlitchScreen() {
   })).join(' / ');
   hudMono(crumb, 14, 48, 7.5, 'rgba(125,255,176,.55)');
 
-  items.forEach((it, i) => {
-    const y = 64 + i * 13;
+  keepGlitchSelectionVisible(items);
+  const first = gl.scroll;
+  const last = Math.min(items.length, first + GLITCH_MENU_ROWS);
+  for (let i = first; i < last; i++) {
+    const it = items[i];
+    const y = GLITCH_MENU_Y + (i - first) * GLITCH_MENU_ROW_H;
     const sel = i === gl.sel;
     if (sel) {
       hud.fillStyle = 'rgba(125,255,176,.16)';
@@ -903,7 +907,12 @@ function drawGlitchScreen() {
     }
     hudMono((sel ? '> ' : '  ') + TR(it.label) + (it.sub ? '  ▸' : ''), 18, y, 9.5,
       sel ? '#c9ffe2' : 'rgba(125,255,176,.72)');
-  });
+  }
+  if (first > 0) hudMono('▲', VIEW_W - 18, GLITCH_MENU_Y, 8, 'rgba(125,255,176,.65)', 'right');
+  if (last < items.length) hudMono('▼', VIEW_W - 18, GLITCH_MENU_Y + (GLITCH_MENU_ROWS - 1) * GLITCH_MENU_ROW_H, 8, 'rgba(125,255,176,.65)', 'right');
+  if (items.length > GLITCH_MENU_ROWS) {
+    hudMono((first + 1) + '–' + last + ' / ' + items.length, VIEW_W - 14, 48, 7.5, 'rgba(125,255,176,.55)', 'right');
+  }
 
   gl.log.forEach((line, i) => {
     hudMono(line, 14, VIEW_H - 30 + i * 9 - gl.log.length * 9 + 30, 7.5, 'rgba(125,255,176,.5)');

@@ -218,5 +218,5 @@ if (document.readyState === 'loading') addEventListener('DOMContentLoaded', boot
 else boot();
 
 /* expose a little handle for tinkering in the console */
-window.J2 = { G, PHYS, LEVELS, POWERS, buildLevel, startRun, openGlitchMenu, isSolidTile: isSolid, T, TILEDEF, SOFT, HELP_COLUMNS, POWER_ORDER, SFX, drawKeyCaps, usePower,
+window.J2 = { G, PHYS, LEVELS, POWERS, GLITCH_ROOT, GLITCH_MENU_ROWS, buildLevel, startRun, openGlitchMenu, isSolidTile: isSolid, T, TILEDEF, SOFT, HELP_COLUMNS, POWER_ORDER, SFX, drawKeyCaps, usePower,
   makeMob: (x, y, type, friendly) => new Mob(x, y, type, friendly) };

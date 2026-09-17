@@ -342,6 +342,27 @@ const GLITCH_ROOT = [
   { label: '>> RESUME GAME', run: () => closeGlitch() },
 ];
 
+/* The shell can contain arbitrarily long submenus (for example LEVEL.SKIP).
+   Keep the selected command inside this fixed viewport rather than letting
+   keyboard focus travel below the overlay. */
+const GLITCH_MENU_Y = 64;
+const GLITCH_MENU_ROW_H = 13;
+const GLITCH_MENU_ROWS = Math.floor((VIEW_H - 128) / GLITCH_MENU_ROW_H);
+
+function keepGlitchSelectionVisible(items) {
+  const gl = G.glitch;
+  const maxScroll = Math.max(0, items.length - GLITCH_MENU_ROWS);
+  gl.scroll = clamp(gl.scroll || 0, 0, maxScroll);
+  if (gl.sel < gl.scroll) gl.scroll = gl.sel;
+  if (gl.sel >= gl.scroll + GLITCH_MENU_ROWS) gl.scroll = gl.sel - GLITCH_MENU_ROWS + 1;
+}
+
+function moveGlitchSelection(items, delta) {
+  G.glitch.sel = (G.glitch.sel + delta + items.length) % items.length;
+  keepGlitchSelectionVisible(items);
+  SFX.menu();
+}
+
 function skipToLevel(index) {
   if (!Number.isInteger(index) || index < 0 || index >= LEVELS.length) return false;
   buildLevel(index);
@@ -391,7 +412,7 @@ function struct(kind) {
 
 function openGlitchMenu(viaKind) {
   G.state = 'glitch';
-  G.glitch = { path: [], sel: 0, t: 0, log: [], boot: 1.1, via: viaKind || 'magma' };
+  G.glitch = { path: [], sel: 0, scroll: 0, t: 0, log: [], boot: 1.1, via: viaKind || 'magma' };
   SFX.glitch();
   G.flash = 0.5;
 }
@@ -407,16 +428,20 @@ function updateGlitch(dt) {
   gl.t += dt;
   if (gl.boot > 0) { gl.boot -= dt; return; }
   const items = glitchItems();
-  if (Keys.justPressed('ArrowDown', 'KeyS')) { gl.sel = (gl.sel + 1) % items.length; SFX.menu(); }
-  if (Keys.justPressed('ArrowUp', 'KeyW')) { gl.sel = (gl.sel - 1 + items.length) % items.length; SFX.menu(); }
+  if (Keys.justPressed('ArrowDown', 'KeyS')) moveGlitchSelection(items, 1);
+  if (Keys.justPressed('ArrowUp', 'KeyW')) moveGlitchSelection(items, -1);
   if (Keys.justPressed('Escape', 'Backspace') || (Keys.justPressed('ArrowLeft', 'KeyA') && gl.path.length)) {
-    if (gl.path.length) { gl.sel = gl.path.pop(); Audio2.blip(280, 0.05, 'square', 0.4); }
+    if (gl.path.length) {
+      gl.sel = gl.path.pop();
+      keepGlitchSelectionVisible(glitchItems());
+      Audio2.blip(280, 0.05, 'square', 0.4);
+    }
     else closeGlitch();
     return;
   }
   if (Keys.justPressed('Enter', 'Space', 'KeyE', 'ArrowRight', 'KeyD')) {
     const it = items[gl.sel];
-    if (it.sub) { gl.path.push(gl.sel); gl.sel = 0; Audio2.blip(620, 0.05, 'square', 0.5); }
+    if (it.sub) { gl.path.push(gl.sel); gl.sel = 0; gl.scroll = 0; Audio2.blip(620, 0.05, 'square', 0.5); }
     else {
       it.run();
       gl.log.unshift('> ' + TR(it.label) + '  ...OK');
