@@ -1,25 +1,93 @@
-name: Attach game build to release
+name: Attach game and Android TV builds to release
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 permissions:
   contents: write
 
 jobs:
-  attach-asset:
+  attach-assets:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout release tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.release.tag_name }}
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Build jay-squared.html
         run: ./build.sh
 
-      - name: Upload to release
+      - name: Build unsigned release APK
+        working-directory: android-tv
+        run: |
+          version_code=$((1000000 + GITHUB_RUN_NUMBER))
+          ./gradlew --no-daemon lintRelease assembleRelease \
+            -PjaySquaredVersionCode="$version_code" \
+            -PjaySquaredVersionName="${GITHUB_REF_NAME}-tv"
+
+      - name: Sign and verify release APK
+        env:
+          ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          ANDROID_RELEASE_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+          ANDROID_RELEASE_SIGNER_SHA256: 881c045e17dc3406d41a7af5a468da09e2e3149dff9dfc8e3f1117c62dd8e4bb
+        run: |
+          set -euo pipefail
+          umask 077
+          if [[ -z "$ANDROID_RELEASE_KEYSTORE_BASE64" || -z "$ANDROID_RELEASE_KEYSTORE_PASSWORD" ]]; then
+            echo "::error::Android release signing secrets are not configured"
+            exit 1
+          fi
+
+          keystore_path="$RUNNER_TEMP/jay-squared-release.p12"
+          aligned_apk="$RUNNER_TEMP/jay-squared-tv-aligned.apk"
+          unsigned_apk="$GITHUB_WORKSPACE/android-tv/app/build/outputs/apk/release/app-release-unsigned.apk"
+          signed_apk="$GITHUB_WORKSPACE/jay-squared-tv.apk"
+          build_tools="$ANDROID_HOME/build-tools/35.0.0"
+
+          cleanup() {
+            rm -f "$keystore_path" "$aligned_apk"
+          }
+          trap cleanup EXIT
+
+          test -f "$unsigned_apk"
+          test -x "$build_tools/zipalign"
+          test -x "$build_tools/apksigner"
+          printf '%s' "$ANDROID_RELEASE_KEYSTORE_BASE64" | base64 --decode > "$keystore_path"
+          chmod 600 "$keystore_path"
+
+          "$build_tools/zipalign" -f -p 4 "$unsigned_apk" "$aligned_apk"
+          "$build_tools/apksigner" sign \
+            --ks "$keystore_path" \
+            --ks-key-alias jay-squared-release \
+            --ks-pass env:ANDROID_RELEASE_KEYSTORE_PASSWORD \
+            --key-pass env:ANDROID_RELEASE_KEYSTORE_PASSWORD \
+            --out "$signed_apk" \
+            "$aligned_apk"
+          "$build_tools/apksigner" verify --verbose --print-certs "$signed_apk"
+          actual_signer_sha256="$(
+            "$build_tools/apksigner" verify --print-certs "$signed_apk" |
+              sed -n 's/^Signer #1 certificate SHA-256 digest: //p'
+          )"
+          if [[ "$actual_signer_sha256" != "$ANDROID_RELEASE_SIGNER_SHA256" ]]; then
+            echo "::error::Release APK signer does not match the pinned certificate"
+            exit 1
+          fi
+
+      - name: Upload release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "${{ github.event.release.tag_name }}" jay-squared.html --clobber
+        run: >-
+          gh release upload "${{ github.event.release.tag_name }}"
+          jay-squared.html jay-squared-tv.apk --clobber
