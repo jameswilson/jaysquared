@@ -7,6 +7,13 @@ plugins {
 
 val generatedAssetsDirectory = layout.buildDirectory.dir("generated/jaySquaredAssets").get().asFile
 val generatedResourcesDirectory = layout.buildDirectory.dir("generated/jaySquaredResources").get().asFile
+val configuredVersionCode: String? = providers.gradleProperty("jaySquaredVersionCode").orNull
+val jaySquaredVersionCode: Int = configuredVersionCode?.toInt() ?: 10101
+val jaySquaredVersionName: String =
+    providers.gradleProperty("jaySquaredVersionName").orNull ?: "1.1.1-tv1"
+
+require(jaySquaredVersionCode > 0) { "jaySquaredVersionCode must be positive" }
+require(jaySquaredVersionName.isNotBlank()) { "jaySquaredVersionName must not be blank" }
 
 android {
     namespace = "com.elementalidad.jaysquared"
@@ -16,8 +23,8 @@ android {
         applicationId = "com.elementalidad.jaysquared"
         minSdk = 24
         targetSdk = 36
-        versionCode = 10101
-        versionName = "1.1.1-tv1"
+        versionCode = jaySquaredVersionCode
+        versionName = jaySquaredVersionName
     }
 
     buildTypes {
