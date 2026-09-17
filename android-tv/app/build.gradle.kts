@@ -45,8 +45,9 @@ android {
     lint {
         abortOnError = true
         checkReleaseBuilds = true
-        // AGP 8.13.2 officially pairs with Gradle 8.13.
-        disable += "AndroidGradlePluginVersion"
+        // AGP 8.13.2 officially pairs with Gradle 8.13 and supports API 36.x.
+        // Ignore newer SDKs installed on CI until this toolchain can target them.
+        disable += setOf("AndroidGradlePluginVersion", "OldTargetApi")
         warningsAsErrors = true
     }
 }
