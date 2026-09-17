@@ -2,6 +2,7 @@ package com.elementalidad.jaysquared
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -18,6 +19,7 @@ import androidx.webkit.WebViewClientCompat
 import java.io.ByteArrayInputStream
 
 class MainActivity : Activity() {
+    private lateinit var appUpdater: AppUpdater
     private lateinit var gameView: WebView
     private var hasDestroyedGameView: Boolean = false
 
@@ -25,9 +27,11 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableImmersiveMode()
+        appUpdater = AppUpdater(this)
         gameView = createGameView()
         setContentView(gameView)
         gameView.loadUrl(GAME_URL)
+        appUpdater.checkForUpdate()
     }
 
     override fun onResume() {
@@ -42,7 +46,16 @@ class MainActivity : Activity() {
         super.onPause()
     }
 
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        appUpdater.onActivityResult(requestCode)
+    }
+
     override fun onDestroy() {
+        if (::appUpdater.isInitialized) {
+            appUpdater.close()
+        }
         if (::gameView.isInitialized && !hasDestroyedGameView) {
             gameView.destroy()
             hasDestroyedGameView = true

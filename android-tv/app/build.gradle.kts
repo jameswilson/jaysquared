@@ -78,4 +78,6 @@ tasks.named("preBuild") {
 
 dependencies {
     implementation("androidx.webkit:webkit:1.17.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20260814")
 }

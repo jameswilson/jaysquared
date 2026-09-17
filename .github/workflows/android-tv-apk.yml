@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/android-tv-apk.yml"
+      - ".github/workflows/release-assets.yml"
       - "android-tv/**"
       - "assets/favicon.*"
       - "build.sh"
@@ -15,6 +16,7 @@ on:
       - main
     paths:
       - ".github/workflows/android-tv-apk.yml"
+      - ".github/workflows/release-assets.yml"
       - "android-tv/**"
       - "assets/favicon.*"
       - "build.sh"
@@ -48,6 +50,27 @@ jobs:
       - name: Validate and build APK
         working-directory: android-tv
         run: ./gradlew --no-daemon lintDebug testDebugUnitTest assembleDebug
+
+      - name: Validate update metadata generation
+        run: |
+          metadata_path="$RUNNER_TEMP/update.json"
+          apk_path="android-tv/app/build/outputs/apk/debug/app-debug.apk"
+          apk_url="https://github.com/jameswilson/jaysquared/releases/download/v0.0.0-ci/jay-squared-tv.apk"
+          android-tv/scripts/create-update-metadata.sh \
+            1000001 v0.0.0-ci-tv "$apk_url" "$apk_path" "$metadata_path"
+          expected_sha256="$(sha256sum "$apk_path" | awk '{print $1}')"
+          expected_size="$(stat --format=%s "$apk_path")"
+          jq --exit-status \
+            --arg apkUrl "$apk_url" \
+            --arg sha256 "$expected_sha256" \
+            --argjson apkSize "$expected_size" '
+            .schemaVersion == 1 and
+            .versionCode == 1000001 and
+            .versionName == "v0.0.0-ci-tv" and
+            .apkUrl == $apkUrl and
+            .sha256 == $sha256 and
+            .apkSize == $apkSize
+          ' "$metadata_path"
 
       - name: Upload test APK
         uses: actions/upload-artifact@v7

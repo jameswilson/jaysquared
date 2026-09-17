@@ -29,13 +29,17 @@ jobs:
       - name: Build jay-squared.html
         run: ./build.sh
 
+      - name: Prepare release version
+        run: |
+          echo "JAY_SQUARED_VERSION_CODE=$((1000000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+          echo "JAY_SQUARED_VERSION_NAME=${GITHUB_REF_NAME}-tv" >> "$GITHUB_ENV"
+
       - name: Build unsigned release APK
         working-directory: android-tv
         run: |
-          version_code=$((1000000 + GITHUB_RUN_NUMBER))
           ./gradlew --no-daemon lintRelease assembleRelease \
-            -PjaySquaredVersionCode="$version_code" \
-            -PjaySquaredVersionName="${GITHUB_REF_NAME}-tv"
+            -PjaySquaredVersionCode="$JAY_SQUARED_VERSION_CODE" \
+            -PjaySquaredVersionName="$JAY_SQUARED_VERSION_NAME"
 
       - name: Sign and verify release APK
         env:
@@ -85,9 +89,20 @@ jobs:
             exit 1
           fi
 
+      - name: Create update metadata
+        env:
+          APK_URL: https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/jay-squared-tv.apk
+        run: >-
+          android-tv/scripts/create-update-metadata.sh
+          "$JAY_SQUARED_VERSION_CODE"
+          "$JAY_SQUARED_VERSION_NAME"
+          "$APK_URL"
+          "$GITHUB_WORKSPACE/jay-squared-tv.apk"
+          "$GITHUB_WORKSPACE/update.json"
+
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           gh release upload "${{ github.event.release.tag_name }}"
-          jay-squared.html jay-squared-tv.apk --clobber
+          jay-squared.html jay-squared-tv.apk update.json --clobber
