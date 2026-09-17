@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="132" viewBox="-34 -59 70 66" role="img" aria-labelledby="title">
+  <title id="title">Jay Squared logo</title>
+  <defs>
+    <path id="j" d="M0-50h15v45H0zM-25-50h40v10h-40zM-30-20h10V0h-10zM-20-10h35V0h-35z"/>
+    <path id="two" d="M18-55h9v3h-9zM15-52h3v3h-3zM27-52h3v6h-3zM24-46h3v3h-3zM21-43h3v3h-3zM18-40h3v3h-3zM15-37h15v3H15z"/>
+  </defs>
+  <g shape-rendering="crispEdges">
+    <g transform="translate(1.6 2.2)" fill="#0b1020">
+      <use href="#j"/>
+      <use href="#two"/>
+    </g>
+    <use href="#j" fill="#7ee787"/>
+    <use href="#two" fill="#ffd166"/>
+  </g>
+</svg>

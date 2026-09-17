@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180">
+  <defs>
+    <linearGradient id="background" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2d4b65"/>
+      <stop offset="100%" stop-color="#3b5f75"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="180" fill="url(#background)"/>
+  <image href="../../assets/logo.svg" x="90" y="24" width="140" height="132"/>
+</svg>
