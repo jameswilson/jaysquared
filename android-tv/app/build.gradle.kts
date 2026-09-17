@@ -6,7 +6,6 @@ plugins {
 }
 
 val generatedAssetsDirectory = layout.buildDirectory.dir("generated/jaySquaredAssets").get().asFile
-val generatedResourcesDirectory = layout.buildDirectory.dir("generated/jaySquaredResources").get().asFile
 val configuredVersionCode: String? = providers.gradleProperty("jaySquaredVersionCode").orNull
 val jaySquaredVersionCode: Int = configuredVersionCode?.toInt() ?: 10101
 val jaySquaredVersionName: String =
@@ -45,7 +44,6 @@ android {
     sourceSets {
         getByName("main") {
             assets.srcDir(generatedAssetsDirectory)
-            res.srcDir(generatedResourcesDirectory)
         }
     }
 
@@ -74,15 +72,8 @@ val syncGameAssets by tasks.registering(Sync::class) {
     into(generatedAssetsDirectory)
 }
 
-val syncTvResources by tasks.registering(Sync::class) {
-    from(rootProject.file("../docs/title.en.png")) {
-        rename { "tv_banner.png" }
-    }
-    into(generatedResourcesDirectory.resolve("drawable-nodpi"))
-}
-
 tasks.named("preBuild") {
-    dependsOn(syncGameAssets, syncTvResources)
+    dependsOn(syncGameAssets)
 }
 
 dependencies {
