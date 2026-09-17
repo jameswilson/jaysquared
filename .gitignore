@@ -1,5 +1,12 @@
 node_modules/
 package-lock.json
 
+# Android TV build state and signing material
+android-tv/.gradle/
+android-tv/local.properties
+android-tv/**/build/
+android-tv/*.jks
+android-tv/*.keystore
+
 # screenshots the Playwright suites write while running
 tests/shots/

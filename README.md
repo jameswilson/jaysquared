@@ -26,6 +26,24 @@ install, nothing to serve.  To play you have the following options:
   and double-click it to load it locally in your browser,
 - or clone this repo and open the file. It works offline; there is no build step required to play.
 
+### Android TV
+
+The `android-tv/` project packages the same generated HTML game as a fullscreen,
+offline Android TV app. It includes a TV launcher entry, persistent browser
+storage, hardware-keyboard focus, and no internet permission.
+
+To create a locally installable test APK with JDK 17 and the Android SDK:
+
+```sh
+./build.sh
+cd android-tv
+./gradlew lintDebug testDebugUnitTest assembleDebug
+```
+
+The APK is written to `android-tv/app/build/outputs/apk/debug/app-debug.apk`.
+See [`android-tv/README.md`](android-tv/README.md) for installation and release
+signing notes.
+
 ### Controls
 
 | Key | Does |
