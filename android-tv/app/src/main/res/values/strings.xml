@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Jay Squared</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available_message">Jay Squared %1$s is ready to install.</string>
+    <string name="update_now">Update now</string>
+    <string name="update_later">Later</string>
+    <string name="update_permission_required">Allow Jay Squared to install apps, then return to continue.</string>
+    <string name="update_permission_missing">Installation permission was not enabled. You can update later.</string>
+    <string name="update_downloading">Downloading and verifying the update…</string>
+    <string name="update_failed">The update could not be installed. Jay Squared will continue offline.</string>
+    <string name="update_installed">Update installed. Restarting Jay Squared…</string>
 </resources>
